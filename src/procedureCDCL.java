@@ -3,7 +3,7 @@ import java.util.*;
 public class procedureCDCL {
 
     private CNFProblem problem;
-    private Stack<LinkedHashMap<String, Boolean>> procedureStack;
+    private CDCLprocedureStack procedureStack;
     private Map<String, Boolean> assignedValue;
     private List<List<String>> actualProblem;
     private List<String> learning;
@@ -12,7 +12,7 @@ public class procedureCDCL {
     public procedureCDCL(CNFProblem problem){
 
         this.problem = problem;
-        this.procedureStack = new Stack<>();
+        this.procedureStack = new CDCLprocedureStack();
         this.assignedValue = new HashMap<>();
 
         for (int i = 1; i <= this.problem.getVariableNumber(); i++){
@@ -166,8 +166,6 @@ public class procedureCDCL {
 
 
     private int conflictAnalysis(){
-
-
 
 
     }
