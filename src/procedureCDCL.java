@@ -2,39 +2,68 @@ import java.util.*;
 
 public class procedureCDCL {
 
-    private CNFProblem problem;
-    private CDCLprocedureStack procedureStack;
-    private Map<String, Boolean> assignedValue;
-    private List<List<String>> actualProblem;
-    private List<String> learning;
-    private List<String> conflictClause;
+    CNFProblem problem;
+    CDCLprocedureStack procedureStack;
+    Map<String, Boolean> assignedValue;
+    List<List<String>> actualProblem;
+    List<String> learning;
+    List<String> conflictClause;
 
     public procedureCDCL(CNFProblem problem){
 
         this.problem = problem;
         this.procedureStack = new CDCLprocedureStack();
-        this.assignedValue = new HashMap<>();
+        this.assignedValue = initializeVariables();
 
-        for (int i = 1; i <= this.problem.getVariableNumber(); i++){
-            this.assignedValue.put(String.valueOf(i), null);
-        }
-
-        this.actualProblem = problem.getClauses();
         this.learning = new ArrayList<>();
         this.conflictClause = new ArrayList<>();
 
     }
 
+    private HashMap<String, Boolean> initializeVariables(){
+
+        // This method was designed to create a map that identifies for each literal the value assigned to it, if it was assigned.
+        // To apply the VSIDS heuristic, it has been created a map ordered so that the first values are the most frequent ones
+        // so that at runtime, to make the decision just iterate over the map and the first not assigned is decided.
+        // All the others after it will be less frequent than the one selected.
+
+        Map<String, Integer> counterOccurence = new HashMap<>();
+
+        for (int i = 1; i <= this.problem.getVariableNumber(); i++){
+            counterOccurence.put(String.valueOf(i), 0);
+        }
+
+        for (String key : counterOccurence.keySet()){
+
+            for (List<String> clause : this.problem.getClauses())
+                if (clause.contains(key) || clause.contains("-" + key))
+                    counterOccurence.put(key, counterOccurence.get(key) + 1);
+
+        }
+
+        List<Map.Entry<String, Integer>> ordingList = new ArrayList<>(counterOccurence.entrySet());
+        ordingList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
+        LinkedHashMap <String, Boolean> ordinateMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Integer> entry : ordingList){
+            ordinateMap.put(entry.getKey(), null);
+        }
+
+        return ordinateMap;
+
+    }
+
+
     public String executeCDCL(){
 
-        /*if (unitPropagation() == "CONFLICT"){
+        if (searchMode.unitPropagation(this).equals("CONFLICT")){
             return "UNSAT";
-        }*/
+        }
 
-        while ( ! allVariableAssigned()){
+        while ( ! searchMode.allVariableAssigned(this)){
 
-            pickBranchingVariable();
-            if (Objects.equals(unitPropagation(), "CONFLICT")){
+            searchMode.pickBranchingVariable(this);
+            if (searchMode.unitPropagation(this).equals("CONFLICT")){
 
                 int decision_level = conflictAnalysis();
 
@@ -51,84 +80,6 @@ public class procedureCDCL {
 
     }
 
-    private void pickBranchingVariable(){
-
-        for (Map.Entry<String, Boolean> m : this.assignedValue.entrySet()){
-            if (m.getValue() == null){
-
-                this.assignedValue.put(m.getKey(), Boolean.TRUE);
-                this.procedureStack.push(new LinkedHashMap<>(){{ put(m.getKey(), Boolean.TRUE); }});
-
-            }
-        }
-
-    }
-
-    private boolean allVariableAssigned(){
-        return !this.assignedValue.containsValue(null);
-    }
-
-    private String unitPropagation(){
-
-        LinkedHashMap<String, Boolean> currentLevel = this.procedureStack.pop();
-
-        for (List<String> clause : this.actualProblem){
-
-            List<String> copyClause = new ArrayList<>(clause);
-            boolean valueOfTheClose = false;
-
-            for (Map.Entry<String, Boolean> m : this.assignedValue.entrySet()){
-
-                if ( valueOfTheClose )
-                    break;
-
-                if (copyClause.contains(m.getKey())) {
-                    if ( m.getValue() == Boolean.TRUE )
-                        valueOfTheClose = true;
-                    else
-                        copyClause.remove(m.getKey());
-
-                }
-                else if ( copyClause.contains("-" + m.getKey()) ) {
-                    if ( m.getValue() == Boolean.FALSE )
-                        valueOfTheClose = true;
-                    else
-                        copyClause.remove("-" + m.getKey());
-                }
-
-            }
-
-            if ( valueOfTheClose )
-                continue;
-            else {
-
-                if (copyClause.size() == 1) {
-                    String literal = copyClause.get(0);
-                    Boolean value;
-
-                    if (literal.startsWith("-")) {
-                        value = Boolean.FALSE;
-                        literal = literal.substring(1);
-                    } else {
-                        value = Boolean.TRUE;
-                    }
-
-                    if (this.assignedValue.containsValue(literal)) {
-                        this.assignedValue.put(literal, value);
-                        currentLevel.put(literal, value);
-                    }
-                }
-                else if (copyClause.isEmpty()) {
-                    this.conflictClause = new ArrayList<>(clause);
-                    return "CONFLICT";
-                }
-            }
-
-        }
-
-        this.procedureStack.push(currentLevel);
-        return "NO-CONFLICT";
-    }
 
     private void backTrack(int decision_level){
 
@@ -169,7 +120,5 @@ public class procedureCDCL {
 
 
     }
-
-
 
 }
