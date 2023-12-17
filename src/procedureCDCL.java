@@ -5,7 +5,7 @@ public class procedureCDCL {
     CNFProblem problem;
     CDCLprocedureStack procedureStack;
     Map<Integer, assignedLiteral> assignedValue;
-    List<Integer> learning;
+    List<List<Integer>> learning;
     List<Integer> conflictClause;
 
     public procedureCDCL(CNFProblem problem){
@@ -61,15 +61,19 @@ public class procedureCDCL {
 
         while ( ! searchMode.allVariableAssigned(this)){
 
-            searchMode.pickBranchingVariable(this);
+            ArrayList<assignedLiteral> topLevel = this.procedureStack.getTopLevel();
+
+            if (topLevel.size() == 1 && !topLevel.get(0).isConflictImplied())
+                searchMode.pickBranchingVariable(this);
+
             if (searchMode.unitPropagation(this).equals("CONFLICT")){
 
-                int decision_level = conflictAnalysis();
+                int decision_level = conflictSolvingMode.conflictAnalysis(this);
 
                 if (decision_level < 0)
                         return "UNSAT";
                 else
-                    backTrack(decision_level);
+                    conflictSolvingMode.backTrack(this, decision_level);
 
             }
 

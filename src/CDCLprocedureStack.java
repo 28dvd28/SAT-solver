@@ -63,5 +63,19 @@ public class CDCLprocedureStack {
 
     }
 
+    public ArrayList<Integer> getLiteralAtLevel(int index){
+
+        List<assignedLiteral> level = this.procedureStack.get(index);
+        ArrayList<Integer> definedLiteral = new ArrayList<>();
+
+        for (assignedLiteral literal : level)
+            definedLiteral.add(literal.getName());
+
+        return definedLiteral;
+
+    }
+
+
+
 
 }
