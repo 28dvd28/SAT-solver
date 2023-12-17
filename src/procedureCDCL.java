@@ -4,10 +4,9 @@ public class procedureCDCL {
 
     CNFProblem problem;
     CDCLprocedureStack procedureStack;
-    Map<String, Boolean> assignedValue;
-    List<List<String>> actualProblem;
-    List<String> learning;
-    List<String> conflictClause;
+    Map<Integer, Boolean> assignedValue;
+    List<Integer> learning;
+    List<Integer> conflictClause;
 
     public procedureCDCL(CNFProblem problem){
 
@@ -20,32 +19,32 @@ public class procedureCDCL {
 
     }
 
-    private HashMap<String, Boolean> initializeVariables(){
+    private HashMap<Integer, Boolean> initializeVariables(){
 
         // This method was designed to create a map that identifies for each literal the value assigned to it, if it was assigned.
         // To apply the VSIDS heuristic, it has been created a map ordered so that the first values are the most frequent ones
         // so that at runtime, to make the decision just iterate over the map and the first not assigned is decided.
         // All the others after it will be less frequent than the one selected.
 
-        Map<String, Integer> counterOccurence = new HashMap<>();
+        Map<Integer, Integer> counterOccurence = new HashMap<>();
 
         for (int i = 1; i <= this.problem.getVariableNumber(); i++){
-            counterOccurence.put(String.valueOf(i), 0);
+            counterOccurence.put(i, 0);
         }
 
-        for (String key : counterOccurence.keySet()){
+        for (Integer key : counterOccurence.keySet()){
 
-            for (List<String> clause : this.problem.getClauses())
-                if (clause.contains(key) || clause.contains("-" + key))
+            for (List<Integer> clause : this.problem.getClauses())
+                if (clause.contains(key) || clause.contains(-1 * key))
                     counterOccurence.put(key, counterOccurence.get(key) + 1);
 
         }
 
-        List<Map.Entry<String, Integer>> ordingList = new ArrayList<>(counterOccurence.entrySet());
+        List<Map.Entry<Integer, Integer>> ordingList = new ArrayList<>(counterOccurence.entrySet());
         ordingList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
 
-        LinkedHashMap <String, Boolean> ordinateMap = new LinkedHashMap<>();
-        for (Map.Entry<String, Integer> entry : ordingList){
+        LinkedHashMap <Integer, Boolean> ordinateMap = new LinkedHashMap<>();
+        for (Map.Entry<Integer, Integer> entry : ordingList){
             ordinateMap.put(entry.getKey(), null);
         }
 

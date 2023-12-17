@@ -6,7 +6,7 @@ class searchMode {
 
     public static void pickBranchingVariable(procedureCDCL mainProcedure){
 
-        for (Map.Entry<String, Boolean> m : mainProcedure.assignedValue.entrySet()){
+        for (Map.Entry<Integer, Boolean> m : mainProcedure.assignedValue.entrySet()){
             if (m.getValue() == null){
 
                 mainProcedure.assignedValue.put(m.getKey(), Boolean.TRUE);
@@ -34,16 +34,16 @@ class searchMode {
 
         CNFProblem problem = mainProcedure.problem;
 
-        List<List<String>> clauses = problem.getClauses();
+        List<List<Integer>> clauses = problem.getClauses();
 
         for (int i = 0; i < clauses.size()-1; i++) {
 
             if (clauses.get(i).size() == 1){
 
-                String literal = clauses.get(i).get(0);
+                Integer literal = clauses.get(i).get(0);
                 Boolean value = Boolean.TRUE;
-                if ( literal.startsWith("-")) {
-                    literal = literal.substring(1);
+                if ( literal < 0 ) {
+                    literal = Math.abs(literal);
                     value = Boolean.FALSE;
                 }
 
@@ -62,22 +62,22 @@ class searchMode {
 
     }
 
-    public static boolean clausesAreOpposite(List<String> clause1, List<String> clause2, procedureCDCL mainProcedure){
+    public static boolean clausesAreOpposite(List<Integer> clause1, List<Integer> clause2, procedureCDCL mainProcedure){
 
         int equalsValues = 0;
         int differentValues = 0;
-        String equalLiteral = "";
+        Integer equalLiteral = 0;
 
-        for (String s1: clause1){
-            for ( String s2: clause2){
+        for (Integer s1: clause1){
+            for ( Integer s2: clause2){
 
                 if ( s1.equals(s2) ) {
                     equalsValues++;
                     equalLiteral = s1;
                 }
-                if ( !s1.equals("-" + s2) )
+                if ( !s1.equals(-1 * s2) )
                     differentValues++;
-                if ( !s2.equals("-" + s1) )
+                if ( !s2.equals(-1 * s1) )
                     differentValues++;
 
             }
@@ -89,8 +89,8 @@ class searchMode {
             if (equalsValues == 1 && differentValues == 0){
 
                 Boolean value = Boolean.TRUE;
-                if ( equalLiteral.startsWith("-")) {
-                    equalLiteral = equalLiteral.substring(1);
+                if ( equalLiteral < 0 ) {
+                    equalLiteral = Math.abs(equalLiteral);
                     value = Boolean.FALSE;
                 }
 
@@ -105,29 +105,25 @@ class searchMode {
 
     public static String afterDecisionsUnitPropagation(procedureCDCL mainProcedure){
 
-        List<List<String>> problem = mainProcedure.problem.getClauses();
+        List<List<Integer>> problem = mainProcedure.problem.getClauses();
 
         for ( int i = 0; i < problem.size(); i++ ){
 
-            List<String> clause = problem.get(i);
+            List<Integer> clause = problem.get(i);
 
             Boolean valueOfTheClause = Boolean.FALSE;
-            List<String> noValueLiteral = new ArrayList<>();
+            List<Integer> noValueLiteral = new ArrayList<>();
 
-            for (String literal : clause){
+            for (Integer literal : clause){
 
-                String l = literal;
                 Boolean literalValue;
-                if (l.startsWith("-")) {
-                    l = literal.substring(1);
-                    literalValue = !mainProcedure.assignedValue.get(literal);
-                }
-                else{
-                    literalValue = mainProcedure.assignedValue.get(literal);
-                }
+                if (literal < 0)
+                    literalValue = !mainProcedure.assignedValue.get(Math.abs(literal));
+                else
+                    literalValue = mainProcedure.assignedValue.get(Math.abs(literal));
 
-                if (mainProcedure.assignedValue.get(literal) == null)
-                    noValueLiteral.add(literal);
+                if (mainProcedure.assignedValue.get(Math.abs(literal)) == null)
+                    noValueLiteral.add(Math.abs(literal));
                 else
                     valueOfTheClause = valueOfTheClause || literalValue;
 
@@ -139,7 +135,7 @@ class searchMode {
             }
             if (noValueLiteral.size() == 1 && valueOfTheClause == Boolean.FALSE){
 
-                String propagateLiteral = noValueLiteral.get(0);
+                Integer propagateLiteral = noValueLiteral.get(0);
                 mainProcedure.assignedValue.put(propagateLiteral, Boolean.TRUE);
                 mainProcedure.procedureStack.addImpliedLiteral(propagateLiteral, Boolean.TRUE, clause);
                 i = 0;

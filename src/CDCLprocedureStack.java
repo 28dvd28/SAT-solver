@@ -7,14 +7,14 @@ public class CDCLprocedureStack {
 
     public static class assignedLiteral {
 
-        private final String name;
+        private final Integer name;
         private Boolean value;
-        private List<String> ancestor;
+        private List<Integer> ancestor;
         private Boolean decided;
         private Boolean implied;
         private Boolean conflictImplied;
 
-        public assignedLiteral(String name, Boolean value){
+        public assignedLiteral(Integer name, Boolean value){
 
             this.name = name;
             this.value = value;
@@ -27,14 +27,14 @@ public class CDCLprocedureStack {
             this.conflictImplied = Boolean.FALSE;
         }
 
-        public void setImplied(List<String> ancestor){
+        public void setImplied(List<Integer> ancestor){
             this.decided = Boolean.FALSE;
             this.implied = Boolean.TRUE;
             this.conflictImplied = Boolean.FALSE;
             this.ancestor = ancestor;
         }
 
-        public void setConflictImplied(List<String> ancestor) {
+        public void setConflictImplied(List<Integer> ancestor) {
             this.decided = Boolean.FALSE;
             this.implied = Boolean.FALSE;
             this.conflictImplied = Boolean.TRUE;
@@ -43,9 +43,9 @@ public class CDCLprocedureStack {
             this.ancestor = ancestor;
         }
 
-        public String getName(){ return this.name; }
+        public Integer getName(){ return this.name; }
         public Boolean getValue(){ return this.value; }
-        public List<String> getAncestor(){ return this.ancestor; }
+        public List<Integer> getAncestor(){ return this.ancestor; }
         public Boolean isDecided(){ return this.decided; }
         public Boolean isImplied(){ return this.implied; }
         public Boolean isConflictImplied(){ return this.conflictImplied; }
@@ -63,7 +63,7 @@ public class CDCLprocedureStack {
         this.procedureStack = new Stack<>();
     }
 
-    public void addDecidedLiteral(String name, Boolean value) {
+    public void addDecidedLiteral(Integer name, Boolean value) {
 
         assignedLiteral literalDecided = new assignedLiteral(name, value);
         literalDecided.setDecided();
@@ -73,7 +73,7 @@ public class CDCLprocedureStack {
         this.procedureStack.push(newLevel);
     }
 
-    public void addImpliedLiteral(String name, Boolean value, List<String> ancestor){
+    public void addImpliedLiteral(Integer name, Boolean value, List<Integer> ancestor){
 
         assignedLiteral literalImplied = new assignedLiteral(name, value);
         literalImplied.setImplied(ancestor);
@@ -83,7 +83,7 @@ public class CDCLprocedureStack {
         this.procedureStack.push(currentLevel);
     }
 
-    public void addConflictImpliedLiteral(String name, Boolean value, List<String> ancestor){
+    public void addConflictImpliedLiteral(Integer name, Boolean value, List<Integer> ancestor){
 
         assignedLiteral literalConflictImplied = new assignedLiteral(name, value);
         literalConflictImplied.setConflictImplied(ancestor);

@@ -5,7 +5,9 @@ public class Main {
 
         CNFProblem problem = new CNFProblem("Test_unsat.cnf");
 
-        procedureCDCL procedure = new procedureCDCL(problem);
+        System.out.println(problem.getClauses());
+
+        //procedureCDCL procedure = new procedureCDCL(problem);
         //String result = procedure.executeCDCL();
 
         //System.out.println(result);

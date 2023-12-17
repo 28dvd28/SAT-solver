@@ -9,7 +9,7 @@ public class CNFProblem {
 
     private int variableNumber;
     private int clausesNumber;
-    private List<List<String>> clauses = new ArrayList<>();
+    private List<List<Integer>> clauses = new ArrayList<>();
 
     public CNFProblem(String fileName){
 
@@ -35,8 +35,12 @@ public class CNFProblem {
                     // La riga non è un commento e non inizia con '%', quindi è una clausola CNF
 
                     String[] splitedLine = line.split(" ");
-                    List<String> listedLine = new ArrayList<>(Arrays.asList(splitedLine));
-                    listedLine.removeIf(s -> s.equals("0"));
+                    List<Integer> listedLine = new ArrayList<>();
+
+                    for ( String s : splitedLine )
+                        listedLine.add(Integer.parseInt(s));
+
+                    listedLine.removeIf(s -> s == 0);
 
                     if ( !listedLine.isEmpty() ) {
                         this.clauses.add(listedLine);
@@ -57,7 +61,7 @@ public class CNFProblem {
         return this.clausesNumber;
     }
 
-    public List<List<String>> getClauses(){
+    public List<List<Integer>> getClauses(){
         return  this.clauses;
     }
 
