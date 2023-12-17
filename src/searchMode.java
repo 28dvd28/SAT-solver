@@ -6,10 +6,10 @@ class searchMode {
 
     public static void pickBranchingVariable(procedureCDCL mainProcedure){
 
-        for (Map.Entry<Integer, Boolean> m : mainProcedure.assignedValue.entrySet()){
+        for (Map.Entry<Integer, assignedLiteral> m : mainProcedure.assignedValue.entrySet()){
             if (m.getValue() == null){
 
-                mainProcedure.assignedValue.put(m.getKey(), Boolean.TRUE);
+                mainProcedure.assignedValue.put(m.getKey(), new assignedLiteral(m.getKey(), Boolean.TRUE).setDecided());
                 mainProcedure.procedureStack.addDecidedLiteral(m.getKey(), Boolean.TRUE);
 
             }
@@ -48,8 +48,11 @@ class searchMode {
                 }
 
                 mainProcedure.procedureStack.addImpliedLiteral(literal, value, null);
-                mainProcedure.assignedValue.put(literal, value);
+                mainProcedure.assignedValue.put(literal, new assignedLiteral(literal, value).setImplied(null));
             }
+
+            if (containsOppositeLiteral(clauses.get(i)))
+                return "UNSAT";
 
             for (int j = i + 1; j < clauses.size()-1; j++){
                 if (clausesAreOpposite(clauses.get(i), clauses.get(j), mainProcedure))
@@ -59,6 +62,16 @@ class searchMode {
         }
 
         return afterDecisionsUnitPropagation(mainProcedure);
+
+    }
+
+    private boolean containsOppositeLiteral(List<Integer> clause){
+
+        for ( Integer l : clause)
+            if (clause.contains(-1 * l))
+                return true;
+
+        return false;
 
     }
 
@@ -95,7 +108,7 @@ class searchMode {
                 }
 
                 mainProcedure.procedureStack.addImpliedLiteral(equalLiteral, value, null);
-                mainProcedure.assignedValue.put(equalLiteral, value);
+                mainProcedure.assignedValue.put(equalLiteral, new assignedLiteral(equalLiteral, value).setImplied(null));
 
             }
         }
@@ -118,9 +131,9 @@ class searchMode {
 
                 Boolean literalValue;
                 if (literal < 0)
-                    literalValue = !mainProcedure.assignedValue.get(Math.abs(literal));
+                    literalValue = !mainProcedure.assignedValue.get(Math.abs(literal)).getValue();
                 else
-                    literalValue = mainProcedure.assignedValue.get(Math.abs(literal));
+                    literalValue = mainProcedure.assignedValue.get(Math.abs(literal)).getValue();
 
                 if (mainProcedure.assignedValue.get(Math.abs(literal)) == null)
                     noValueLiteral.add(Math.abs(literal));
@@ -136,7 +149,7 @@ class searchMode {
             if (noValueLiteral.size() == 1 && valueOfTheClause == Boolean.FALSE){
 
                 Integer propagateLiteral = noValueLiteral.get(0);
-                mainProcedure.assignedValue.put(propagateLiteral, Boolean.TRUE);
+                mainProcedure.assignedValue.put(propagateLiteral, new assignedLiteral(propagateLiteral, Boolean.TRUE).setImplied(clause));
                 mainProcedure.procedureStack.addImpliedLiteral(propagateLiteral, Boolean.TRUE, clause);
                 i = 0;
 

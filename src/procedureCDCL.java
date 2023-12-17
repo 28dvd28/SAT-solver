@@ -4,7 +4,7 @@ public class procedureCDCL {
 
     CNFProblem problem;
     CDCLprocedureStack procedureStack;
-    Map<Integer, Boolean> assignedValue;
+    Map<Integer, assignedLiteral> assignedValue;
     List<Integer> learning;
     List<Integer> conflictClause;
 
@@ -19,7 +19,7 @@ public class procedureCDCL {
 
     }
 
-    private HashMap<Integer, Boolean> initializeVariables(){
+    private HashMap<Integer, assignedLiteral> initializeVariables(){
 
         // This method was designed to create a map that identifies for each literal the value assigned to it, if it was assigned.
         // To apply the VSIDS heuristic, it has been created a map ordered so that the first values are the most frequent ones
@@ -43,7 +43,7 @@ public class procedureCDCL {
         List<Map.Entry<Integer, Integer>> ordingList = new ArrayList<>(counterOccurence.entrySet());
         ordingList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
 
-        LinkedHashMap <Integer, Boolean> ordinateMap = new LinkedHashMap<>();
+        LinkedHashMap <Integer, assignedLiteral> ordinateMap = new LinkedHashMap<>();
         for (Map.Entry<Integer, Integer> entry : ordingList){
             ordinateMap.put(entry.getKey(), null);
         }
@@ -76,47 +76,6 @@ public class procedureCDCL {
         }
 
         return "SAT" + " " + this.procedureStack;
-
-    }
-
-
-    private void backTrack(int decision_level){
-
-        LinkedHashMap<String, Boolean> current_level;
-
-        if ( this.procedureStack.size() > decision_level ){
-
-            current_level= this.procedureStack.pop();
-
-            for ( String literal : current_level.keySet()){
-
-                if ( this.assignedValue.containsValue(literal))
-                    this.assignedValue.put(literal, null);
-
-            }
-
-        }
-
-        current_level= this.procedureStack.pop();
-        Iterator<String> iterator = current_level.keySet().iterator();
-        String firstElement = iterator.next();
-        Boolean newVal = ! current_level.get(firstElement);
-
-        for ( String literal : current_level.keySet()){
-
-            if ( this.assignedValue.containsValue(literal))
-                this.assignedValue.put(literal, null);
-
-        }
-
-        LinkedHashMap<String, Boolean> newCurrentLevel = new LinkedHashMap<>(){{ put ( firstElement , newVal); }};
-        this.procedureStack.push(newCurrentLevel);
-
-    }
-
-
-    private int conflictAnalysis(){
-
 
     }
 

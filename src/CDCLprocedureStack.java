@@ -5,54 +5,6 @@ import java.util.Stack;
 
 public class CDCLprocedureStack {
 
-    public static class assignedLiteral {
-
-        private final Integer name;
-        private Boolean value;
-        private List<Integer> ancestor;
-        private Boolean decided;
-        private Boolean implied;
-        private Boolean conflictImplied;
-
-        public assignedLiteral(Integer name, Boolean value){
-
-            this.name = name;
-            this.value = value;
-
-        }
-
-        public void setDecided(){
-            this.decided = Boolean.TRUE;
-            this.implied = Boolean.FALSE;
-            this.conflictImplied = Boolean.FALSE;
-        }
-
-        public void setImplied(List<Integer> ancestor){
-            this.decided = Boolean.FALSE;
-            this.implied = Boolean.TRUE;
-            this.conflictImplied = Boolean.FALSE;
-            this.ancestor = ancestor;
-        }
-
-        public void setConflictImplied(List<Integer> ancestor) {
-            this.decided = Boolean.FALSE;
-            this.implied = Boolean.FALSE;
-            this.conflictImplied = Boolean.TRUE;
-
-            this.value = value;
-            this.ancestor = ancestor;
-        }
-
-        public Integer getName(){ return this.name; }
-        public Boolean getValue(){ return this.value; }
-        public List<Integer> getAncestor(){ return this.ancestor; }
-        public Boolean isDecided(){ return this.decided; }
-        public Boolean isImplied(){ return this.implied; }
-        public Boolean isConflictImplied(){ return this.conflictImplied; }
-
-
-    }
-
     private Stack<ArrayList<assignedLiteral>> procedureStack;
 
     public CDCLprocedureStack(){
@@ -95,12 +47,21 @@ public class CDCLprocedureStack {
 
     public ArrayList<assignedLiteral> deleteLevel(){
 
-        ArrayList<assignedLiteral> currentLevel = this.procedureStack.pop();
-        return currentLevel;
+        return this.procedureStack.pop();
 
     }
 
-    public int size(){ return this.procedureStack.size(); }
+    public ArrayList<assignedLiteral> getTopLevel(){
+
+        return this.procedureStack.peek();
+
+    }
+
+    public int size(){
+
+        return this.procedureStack.size();
+
+    }
 
 
 }
