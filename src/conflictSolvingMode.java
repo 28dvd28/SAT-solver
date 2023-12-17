@@ -41,7 +41,20 @@ public class conflictSolvingMode {
 
     public static int conflictAnalysis(procedureCDCL mainProcedure){
 
-        ArrayList<assignedLiteral> currentLevelAssigments = mainProcedure.procedureStack.getTopLevel();
+        ArrayList<assignedLiteral> currentLevelAssigments;
+
+        int j = 0;
+        boolean changed;
+        do {
+            changed = false;
+            currentLevelAssigments = mainProcedure.procedureStack.getLevelAt(mainProcedure.procedureStack.size() - j);
+            for (assignedLiteral l : currentLevelAssigments)
+                if (l.isConflictImplied()) {
+                    j += 1;
+                    changed = true;
+                    break;
+                }
+        }while(changed);
 
         while (true){
 

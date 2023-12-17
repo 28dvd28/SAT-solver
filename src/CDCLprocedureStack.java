@@ -75,6 +75,12 @@ public class CDCLprocedureStack {
 
     }
 
+    public ArrayList<assignedLiteral> getLevelAt(int index){
+
+        return this.procedureStack.elementAt(index);
+
+    }
+
 
 
 
