@@ -63,6 +63,8 @@ public class procedureCDCL {
 
         while ( !searchMode.problemIsTrue(this) ){
 
+            System.out.print(this.procedureStack);
+
             ArrayList<assignedLiteral> topLevel = this.procedureStack.getTopLevel();
 
             if (!afterBacktrackCycle) {

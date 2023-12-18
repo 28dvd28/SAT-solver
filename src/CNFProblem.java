@@ -27,14 +27,14 @@ public class CNFProblem {
                 else if (line.startsWith("p cnf")) {
                     // La riga inizia con 'p cnf', indicando l'inizio delle specifiche CNF
 
-                    String[] splitedLine = line.split(" ");
+                    String[] splitedLine = line.split("[\s\t]+");
                     this.variableNumber = Integer.parseInt(splitedLine[2]);
                     this.clausesNumber = Integer.parseInt(splitedLine[3]);
 
                 } else if (!line.startsWith("%")) {
                     // La riga non è un commento e non inizia con '%', quindi è una clausola CNF
 
-                    String[] splitedLine = line.split(" ");
+                    String[] splitedLine = line.split("[\s\t]+");
                     List<Integer> listedLine = new ArrayList<>();
 
                     for ( String s : splitedLine )
