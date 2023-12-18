@@ -59,22 +59,28 @@ public class procedureCDCL {
             return "UNSAT";
         }
 
+        boolean afterBacktrackCycle = false;
+
         while ( !searchMode.problemIsTrue(this) ){
 
             ArrayList<assignedLiteral> topLevel = this.procedureStack.getTopLevel();
 
-            if (!(topLevel.size() == 1 && topLevel.get(0).isConflictImplied())) {
+            if (!afterBacktrackCycle) {
                 searchMode.pickBranchingVariable(this);
+            }else{
+                afterBacktrackCycle = false;
             }
 
             if (searchMode.unitPropagation(this).equals("CONFLICT")){
 
                 int decision_level = conflictSolvingMode.conflictAnalysis(this);
 
-                if (decision_level < 0)
+                if (decision_level <= 0)
                         return "UNSAT";
-                else
+                else {
                     conflictSolvingMode.backTrack(this, decision_level);
+                    afterBacktrackCycle = true;
+                }
 
             }
 

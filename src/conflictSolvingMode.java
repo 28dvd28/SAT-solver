@@ -57,6 +57,9 @@ public class conflictSolvingMode {
             }
         }while(changed);
 
+        if(mainProcedure.procedureStack.size() - j == 0)
+            return 0;
+
         while (true){
 
             List<Integer> literalFalsified = new ArrayList<>();
@@ -80,11 +83,18 @@ public class conflictSolvingMode {
                 }
             }
 
-            for ( Integer l : mainProcedure.conflictClause)
+            for ( Integer l : mainProcedure.conflictClause) {
                 if (mainProcedure.assignedValue.get(Math.abs(l)).isImplied()) {
-                    mainProcedure.conflictClause = binaryResolution(mainProcedure.conflictClause, mainProcedure.assignedValue.get(Math.abs(l)).getAncestor());
+                    if ( mainProcedure.assignedValue.get(Math.abs(l)).getAncestor() == null)
+                        if(mainProcedure.assignedValue.get(Math.abs(l)).getValue())
+                            mainProcedure.conflictClause = binaryResolution(mainProcedure.conflictClause, new ArrayList<>() {{add(Math.abs(l));}});
+                        else
+                            mainProcedure.conflictClause = binaryResolution(mainProcedure.conflictClause, new ArrayList<>() {{add(-1 * Math.abs(l));}});
+                    else
+                        mainProcedure.conflictClause = binaryResolution(mainProcedure.conflictClause, mainProcedure.assignedValue.get(Math.abs(l)).getAncestor());
                     break;
                 }
+            }
 
 
         }
