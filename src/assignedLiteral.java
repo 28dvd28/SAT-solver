@@ -51,5 +51,10 @@ public class assignedLiteral {
     public Boolean isImplied(){ return this.implied; }
     public Boolean isConflictImplied(){ return this.conflictImplied; }
 
+    public String toString(){
+
+        return "[" + this.name + " | " + this.value + " |" + this.getAncestor() + "]";
+    }
+
 
 }

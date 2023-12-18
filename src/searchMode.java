@@ -47,13 +47,17 @@ class searchMode {
 
                 Integer literal = clauses.get(i).get(0);
                 Boolean value = Boolean.TRUE;
+                int sign = 1;
                 if ( literal < 0 ) {
                     literal = Math.abs(literal);
                     value = Boolean.FALSE;
+                    sign = -1;
                 }
 
-                mainProcedure.procedureStack.addImpliedLiteral(literal, value, null);
-                mainProcedure.assignedValue.put(literal, new assignedLiteral(literal, value).setImplied(null));
+                Integer finalLiteral = literal;
+                int finalSign = sign;
+                mainProcedure.procedureStack.addImpliedLiteral(literal, value, new ArrayList<>(){{ add(finalSign * finalLiteral);}});
+                mainProcedure.assignedValue.put(literal, new assignedLiteral(literal, value).setImplied( new ArrayList<>() {{ add(finalSign * finalLiteral); }}));
             }
 
             if (containsOppositeLiteral(clauses.get(i)))

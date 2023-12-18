@@ -60,6 +60,8 @@ public class conflictSolvingMode {
         if(mainProcedure.procedureStack.size() - j == 0)
             return 0;
 
+
+        currentLevelAssigments = mainProcedure.procedureStack.getTopLevel();
         while (true){
 
             List<Integer> literalFalsified = new ArrayList<>();
@@ -76,22 +78,17 @@ public class conflictSolvingMode {
                 mainProcedure.learning.add(mainProcedure.conflictClause);
                 mainProcedure.problem.learnClause(mainProcedure.conflictClause);
 
-                for (int i = 0; i < mainProcedure.procedureStack.size(); i++){
+                for (int i = mainProcedure.procedureStack.size() - 1; i >= 0; i--){
 
-                    if (mainProcedure.procedureStack.getLiteralAtLevel(i).contains(literalFalsified.get(0)))
+                    if ( mainProcedure.procedureStack.getLevelAt(i).get(0).isDecided())
                         return i;
+
                 }
             }
 
             for ( Integer l : mainProcedure.conflictClause) {
                 if (mainProcedure.assignedValue.get(Math.abs(l)).isImplied()) {
-                    if ( mainProcedure.assignedValue.get(Math.abs(l)).getAncestor() == null)
-                        if(mainProcedure.assignedValue.get(Math.abs(l)).getValue())
-                            mainProcedure.conflictClause = binaryResolution(mainProcedure.conflictClause, new ArrayList<>() {{add(Math.abs(l));}});
-                        else
-                            mainProcedure.conflictClause = binaryResolution(mainProcedure.conflictClause, new ArrayList<>() {{add(-1 * Math.abs(l));}});
-                    else
-                        mainProcedure.conflictClause = binaryResolution(mainProcedure.conflictClause, mainProcedure.assignedValue.get(Math.abs(l)).getAncestor());
+                    mainProcedure.conflictClause = binaryResolution(mainProcedure.conflictClause, mainProcedure.assignedValue.get(Math.abs(l)).getAncestor());
                     break;
                 }
             }
@@ -101,7 +98,10 @@ public class conflictSolvingMode {
 
     }
 
-    private static List<Integer> binaryResolution(List<Integer> leftClause, List<Integer> rightClause){
+    private static List<Integer> binaryResolution(List<Integer> leftC, List<Integer> rightC){
+
+        List<Integer> leftClause = new ArrayList<>(leftC);
+        List<Integer> rightClause = new ArrayList<>(rightC);
 
         leftClause.sort(null);
         rightClause.sort(null);

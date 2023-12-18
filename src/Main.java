@@ -12,7 +12,7 @@ public class Main {
         String result = procedure.executeCDCL();
         System.out.println(result);
 
-        if ( result.startsWith("SAT")) {
+        if ( result.startsWith("SAT") ) {
             System.out.println("Values not assigned:");
             for (Map.Entry<Integer, assignedLiteral> noAssigned : procedure.assignedValue.entrySet()) {
 
