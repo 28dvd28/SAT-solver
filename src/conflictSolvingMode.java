@@ -10,9 +10,9 @@ public class conflictSolvingMode {
 
         while (true){
 
-            topLevel = mainProcedure.procedureStack.getTopLevel();
+            topLevel = mainProcedure.procedureStack.deleteLevel();
 
-            if(mainProcedure.procedureStack.size() == levelToReach + 1){
+            if(mainProcedure.procedureStack.size() == levelToReach){
 
                 for ( assignedLiteral l : topLevel )
                     if ( l.isImplied() )
@@ -43,9 +43,10 @@ public class conflictSolvingMode {
 
         ArrayList<assignedLiteral> currentLevelAssigments;
 
-        int j = 0;
+        int j = 1;
         boolean changed;
         do {
+
             changed = false;
             currentLevelAssigments = mainProcedure.procedureStack.getLevelAt(mainProcedure.procedureStack.size() - j);
             for (assignedLiteral l : currentLevelAssigments)
@@ -53,7 +54,7 @@ public class conflictSolvingMode {
                     j += 1;
                     changed = true;
                     break;
-                }
+            }
         }while(changed);
 
         while (true){
@@ -68,7 +69,10 @@ public class conflictSolvingMode {
 
             if ( literalFalsified.size() == 1 ){
 
-                mainProcedure.learning.add(mainProcedure.conflictClause); // learning phase
+                // learning phase
+                mainProcedure.learning.add(mainProcedure.conflictClause);
+                mainProcedure.problem.learnClause(mainProcedure.conflictClause);
+
                 for (int i = 0; i < mainProcedure.procedureStack.size(); i++){
 
                     if (mainProcedure.procedureStack.getLiteralAtLevel(i).contains(literalFalsified.get(0)))
@@ -77,8 +81,8 @@ public class conflictSolvingMode {
             }
 
             for ( Integer l : mainProcedure.conflictClause)
-                if ( mainProcedure.assignedValue.get(l).isImplied() ) {
-                    mainProcedure.conflictClause = binaryResolution(mainProcedure.conflictClause, mainProcedure.assignedValue.get(l).getAncestor());
+                if (mainProcedure.assignedValue.get(Math.abs(l)).isImplied()) {
+                    mainProcedure.conflictClause = binaryResolution(mainProcedure.conflictClause, mainProcedure.assignedValue.get(Math.abs(l)).getAncestor());
                     break;
                 }
 
@@ -92,13 +96,19 @@ public class conflictSolvingMode {
         leftClause.sort(null);
         rightClause.sort(null);
 
+        ArrayList<Integer> leftLiteralToRemove = new ArrayList<>();
+        ArrayList<Integer> rightLiteralToRemove = new ArrayList<>();
+
         for (Integer literal : leftClause)
             if (rightClause.contains( -1 * literal )){
 
-                leftClause.removeIf(l -> Objects.equals(l, literal));
-                rightClause.removeIf(l -> Objects.equals(l, -1 * literal));
+                leftLiteralToRemove.add(literal);
+                rightLiteralToRemove.add(-1 * literal);
 
             }
+
+        leftClause.removeAll(leftLiteralToRemove);
+        rightClause.removeAll(rightLiteralToRemove);
 
         Set<Integer> union = new HashSet<>(leftClause);
         union.addAll(rightClause);

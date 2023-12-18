@@ -13,6 +13,7 @@ public class CDCLprocedureStack {
         // o conterrà solo i letterali implicati prima di compiere una decisione
 
         this.procedureStack = new Stack<>();
+        this.procedureStack.push(new ArrayList<>());
     }
 
     public void addDecidedLiteral(Integer name, Boolean value) {
@@ -78,6 +79,43 @@ public class CDCLprocedureStack {
     public ArrayList<assignedLiteral> getLevelAt(int index){
 
         return this.procedureStack.elementAt(index);
+
+    }
+
+    public String toString(){
+
+        String output = "";
+        int i = 0;
+        for ( ArrayList<assignedLiteral> level : this.procedureStack){
+
+            output = output.concat(i + "}");
+
+            for (assignedLiteral literal : level){
+
+                if ( literal.isDecided())
+                    output = output.concat("[DECIDED] " + literal.getName().toString() + " -> " + literal.getValue().toString() + "  ");
+                else if ( literal.isImplied())
+                    output = output.concat("[IMPLIED] " + literal.getName().toString() + " -> " + literal.getValue().toString() + "(" + literal.getAncestor() + ")" +  "  ");
+                else if ( literal.isConflictImplied())
+                    output = output.concat("[CONFLICT-IMPLIED] " + literal.getName().toString() + " -> " + literal.getValue().toString() + "(" + literal.getAncestor() + ")" + "  ");
+
+            }
+
+            output = output.concat("\n");
+            i++;
+
+        }
+
+        return output;
+
+    }
+
+    public boolean isEmpty(){
+
+        if ( this.procedureStack.size() == 1 && this.procedureStack.peek().isEmpty())
+            return true;
+        else
+            return this.procedureStack.isEmpty();
 
     }
 

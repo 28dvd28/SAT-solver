@@ -59,12 +59,13 @@ public class procedureCDCL {
             return "UNSAT";
         }
 
-        while ( ! searchMode.allVariableAssigned(this)){
+        while ( !searchMode.problemIsTrue(this) ){
 
             ArrayList<assignedLiteral> topLevel = this.procedureStack.getTopLevel();
 
-            if (topLevel.size() == 1 && !topLevel.get(0).isConflictImplied())
+            if (!(topLevel.size() == 1 && topLevel.get(0).isConflictImplied())) {
                 searchMode.pickBranchingVariable(this);
+            }
 
             if (searchMode.unitPropagation(this).equals("CONFLICT")){
 
@@ -79,7 +80,7 @@ public class procedureCDCL {
 
         }
 
-        return "SAT" + " " + this.procedureStack;
+        return "SAT" + " || STACK:\n" + this.procedureStack;
 
     }
 

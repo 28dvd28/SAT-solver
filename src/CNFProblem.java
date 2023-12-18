@@ -53,6 +53,17 @@ public class CNFProblem {
 
     }
 
+    public void learnClause(List<Integer> newClause){
+
+        if (!this.clauses.contains(newClause))
+            this.clauses.add(newClause);
+
+    }
+
+    public void forgotClause(List<Integer> clause){
+        this.clauses.remove(clause);
+    }
+
     public int getVariableNumber(){
         return this.variableNumber;
     }
