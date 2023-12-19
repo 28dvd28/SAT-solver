@@ -75,8 +75,10 @@ public class conflictSolvingMode {
             if ( literalFalsified.size() == 1 ){
 
                 // learning phase
-                mainProcedure.learning.add(mainProcedure.conflictClause);
-                mainProcedure.problem.learnClause(mainProcedure.conflictClause);
+                if (!mainProcedure.problem.getClauses().contains(mainProcedure.conflictClause)) {
+                    mainProcedure.learning.add(mainProcedure.conflictClause);
+                    mainProcedure.problem.learnClause(mainProcedure.conflictClause);
+                }
 
                 for (int i = mainProcedure.procedureStack.size() - 1; i >= 0; i--){
 

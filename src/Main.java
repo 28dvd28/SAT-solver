@@ -21,6 +21,10 @@ public class Main {
 
             }
         }
+        else{
+            System.out.println("Final clasue: ");
+            System.out.println(procedure.problem.getClauses());
+        }
 
     }
 
