@@ -5,54 +5,6 @@ import java.util.Stack;
 
 public class CDCLprocedureStack {
 
-    public static class assignedLiteral {
-
-        private final String name;
-        private Boolean value;
-        private List<String> ancestor;
-        private Boolean decided;
-        private Boolean implied;
-        private Boolean conflictImplied;
-
-        public assignedLiteral(String name, Boolean value){
-
-            this.name = name;
-            this.value = value;
-
-        }
-
-        public void setDecided(){
-            this.decided = Boolean.TRUE;
-            this.implied = Boolean.FALSE;
-            this.conflictImplied = Boolean.FALSE;
-        }
-
-        public void setImplied(List<String> ancestor){
-            this.decided = Boolean.FALSE;
-            this.implied = Boolean.TRUE;
-            this.conflictImplied = Boolean.FALSE;
-            this.ancestor = ancestor;
-        }
-
-        public void setConflictImplied(List<String> ancestor) {
-            this.decided = Boolean.FALSE;
-            this.implied = Boolean.FALSE;
-            this.conflictImplied = Boolean.TRUE;
-
-            this.value = value;
-            this.ancestor = ancestor;
-        }
-
-        public String getName(){ return this.name; }
-        public Boolean getValue(){ return this.value; }
-        public List<String> getAncestor(){ return this.ancestor; }
-        public Boolean isDecided(){ return this.decided; }
-        public Boolean isImplied(){ return this.implied; }
-        public Boolean isConflictImplied(){ return this.conflictImplied; }
-
-
-    }
-
     private Stack<ArrayList<assignedLiteral>> procedureStack;
 
     public CDCLprocedureStack(){
@@ -61,9 +13,10 @@ public class CDCLprocedureStack {
         // o conterrà solo i letterali implicati prima di compiere una decisione
 
         this.procedureStack = new Stack<>();
+        this.procedureStack.push(new ArrayList<>());
     }
 
-    public void addDecidedLiteral(String name, Boolean value) {
+    public void addDecidedLiteral(Integer name, Boolean value) {
 
         assignedLiteral literalDecided = new assignedLiteral(name, value);
         literalDecided.setDecided();
@@ -73,7 +26,7 @@ public class CDCLprocedureStack {
         this.procedureStack.push(newLevel);
     }
 
-    public void addImpliedLiteral(String name, Boolean value, List<String> ancestor){
+    public void addImpliedLiteral(Integer name, Boolean value, List<Integer> ancestor){
 
         assignedLiteral literalImplied = new assignedLiteral(name, value);
         literalImplied.setImplied(ancestor);
@@ -83,7 +36,7 @@ public class CDCLprocedureStack {
         this.procedureStack.push(currentLevel);
     }
 
-    public void addConflictImpliedLiteral(String name, Boolean value, List<String> ancestor){
+    public void addConflictImpliedLiteral(Integer name, Boolean value, List<Integer> ancestor){
 
         assignedLiteral literalConflictImplied = new assignedLiteral(name, value);
         literalConflictImplied.setConflictImplied(ancestor);
@@ -95,12 +48,78 @@ public class CDCLprocedureStack {
 
     public ArrayList<assignedLiteral> deleteLevel(){
 
-        ArrayList<assignedLiteral> currentLevel = this.procedureStack.pop();
-        return currentLevel;
+        return this.procedureStack.pop();
 
     }
 
-    public int size(){ return this.procedureStack.size(); }
+    public ArrayList<assignedLiteral> getTopLevel(){
+
+        return this.procedureStack.peek();
+
+    }
+
+    public int size(){
+
+        return this.procedureStack.size();
+
+    }
+
+    public ArrayList<Integer> getLiteralAtLevel(int index){
+
+        List<assignedLiteral> level = this.procedureStack.get(index);
+        ArrayList<Integer> definedLiteral = new ArrayList<>();
+
+        for (assignedLiteral literal : level)
+            definedLiteral.add(literal.getName());
+
+        return definedLiteral;
+
+    }
+
+    public ArrayList<assignedLiteral> getLevelAt(int index){
+
+        return this.procedureStack.elementAt(index);
+
+    }
+
+    public String toString(){
+
+        String output = "";
+        int i = 0;
+        for ( ArrayList<assignedLiteral> level : this.procedureStack){
+
+            output = output.concat(i + "}");
+
+            for (assignedLiteral literal : level){
+
+                if ( literal.isDecided())
+                    output = output.concat("[DECIDED] " + literal.getName().toString() + " -> " + literal.getValue().toString() + "  ");
+                else if ( literal.isImplied())
+                    output = output.concat("[IMPLIED] " + literal.getName().toString() + " -> " + literal.getValue().toString() + "(" + literal.getAncestor() + ")" +  "  ");
+                else if ( literal.isConflictImplied())
+                    output = output.concat("[CONFLICT-IMPLIED] " + literal.getName().toString() + " -> " + literal.getValue().toString() + "(" + literal.getAncestor() + ")" + "  ");
+
+            }
+
+            output = output.concat("\n");
+            i++;
+
+        }
+
+        return output;
+
+    }
+
+    public boolean isEmpty(){
+
+        if ( this.procedureStack.size() == 1 && this.procedureStack.peek().isEmpty())
+            return true;
+        else
+            return this.procedureStack.isEmpty();
+
+    }
+
+
 
 
 }

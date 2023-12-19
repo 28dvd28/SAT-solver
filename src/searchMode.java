@@ -6,11 +6,12 @@ class searchMode {
 
     public static void pickBranchingVariable(procedureCDCL mainProcedure){
 
-        for (Map.Entry<String, Boolean> m : mainProcedure.assignedValue.entrySet()){
+        for (Map.Entry<Integer, assignedLiteral> m : mainProcedure.assignedValue.entrySet()){
             if (m.getValue() == null){
 
-                mainProcedure.assignedValue.put(m.getKey(), Boolean.TRUE);
+                mainProcedure.assignedValue.put(m.getKey(), new assignedLiteral(m.getKey(), Boolean.TRUE).setDecided());
                 mainProcedure.procedureStack.addDecidedLiteral(m.getKey(), Boolean.TRUE);
+                break;
 
             }
         }
@@ -23,7 +24,7 @@ class searchMode {
 
     public static String unitPropagation(procedureCDCL mainProcedure){
 
-        if (mainProcedure.procedureStack.size() == 0)
+        if (mainProcedure.procedureStack.isEmpty())
             return levelZeroUnitPropagation(mainProcedure);
         else
             return afterDecisionsUnitPropagation(mainProcedure);
@@ -34,99 +35,82 @@ class searchMode {
 
         CNFProblem problem = mainProcedure.problem;
 
-        List<List<String>> clauses = problem.getClauses();
+        List<List<Integer>> clauses = problem.getClauses();
 
         for (int i = 0; i < clauses.size()-1; i++) {
 
             if (clauses.get(i).size() == 1){
 
-                String literal = clauses.get(i).get(0);
+                for (int j = i + 1; j < clauses.size(); j++)
+                    if (clausesAreOpposite(clauses.get(i), clauses.get(j), mainProcedure))
+                        return "CONFLICT";
+
+                Integer literal = clauses.get(i).get(0);
                 Boolean value = Boolean.TRUE;
-                if ( literal.startsWith("-")) {
-                    literal = literal.substring(1);
+                int sign = 1;
+                if ( literal < 0 ) {
+                    literal = Math.abs(literal);
                     value = Boolean.FALSE;
+                    sign = -1;
                 }
 
-                mainProcedure.procedureStack.addImpliedLiteral(literal, value, null);
-                mainProcedure.assignedValue.put(literal, value);
+                Integer finalLiteral = literal;
+                int finalSign = sign;
+                mainProcedure.procedureStack.addImpliedLiteral(literal, value, new ArrayList<>(){{ add(finalSign * finalLiteral);}});
+                mainProcedure.assignedValue.put(literal, new assignedLiteral(literal, value).setImplied( new ArrayList<>() {{ add(finalSign * finalLiteral); }}));
             }
 
-            for (int j = i + 1; j < clauses.size()-1; j++){
-                if (clausesAreOpposite(clauses.get(i), clauses.get(j), mainProcedure))
-                    return "UNSAT";
+            if (containsOppositeLiteral(clauses.get(i)))
+                return "CONFLICT";
 
-            }
         }
 
-        return afterDecisionsUnitPropagation(mainProcedure);
+        if ( !mainProcedure.procedureStack.isEmpty() )
+            return afterDecisionsUnitPropagation(mainProcedure);
+        else
+            return "NOT-CONFLICT";
 
     }
 
-    public static boolean clausesAreOpposite(List<String> clause1, List<String> clause2, procedureCDCL mainProcedure){
+    private static boolean containsOppositeLiteral(List<Integer> clause){
 
-        int equalsValues = 0;
-        int differentValues = 0;
-        String equalLiteral = "";
-
-        for (String s1: clause1){
-            for ( String s2: clause2){
-
-                if ( s1.equals(s2) ) {
-                    equalsValues++;
-                    equalLiteral = s1;
-                }
-                if ( !s1.equals("-" + s2) )
-                    differentValues++;
-                if ( !s2.equals("-" + s1) )
-                    differentValues++;
-
-            }
-        }
-
-        if (equalsValues == 0 && differentValues == 0)
-            return true;
-        else{
-            if (equalsValues == 1 && differentValues == 0){
-
-                Boolean value = Boolean.TRUE;
-                if ( equalLiteral.startsWith("-")) {
-                    equalLiteral = equalLiteral.substring(1);
-                    value = Boolean.FALSE;
-                }
-
-                mainProcedure.procedureStack.addImpliedLiteral(equalLiteral, value, null);
-                mainProcedure.assignedValue.put(equalLiteral, value);
-
-            }
-        }
+        for ( Integer l : clause)
+            if (clause.contains(-1 * l))
+                return true;
 
         return false;
+
+    }
+
+    public static boolean clausesAreOpposite(List<Integer> clause1, List<Integer> clause2, procedureCDCL mainProcedure){
+
+        if ( clause1.size() == 1 && clause2.size() == 1 )
+            return clause1.get(0) == -1 * clause2.get(0);
+        return false;
+
     }
 
     public static String afterDecisionsUnitPropagation(procedureCDCL mainProcedure){
 
-        List<List<String>> problem = mainProcedure.problem.getClauses();
+        List<List<Integer>> problem = mainProcedure.problem.getClauses();
 
         for ( int i = 0; i < problem.size(); i++ ){
 
-            List<String> clause = problem.get(i);
+            List<Integer> clause = problem.get(i);
 
             Boolean valueOfTheClause = Boolean.FALSE;
-            List<String> noValueLiteral = new ArrayList<>();
+            List<Integer> noValueLiteral = new ArrayList<>();
 
-            for (String literal : clause){
+            for (Integer literal : clause){
 
-                String l = literal;
-                Boolean literalValue;
-                if (l.startsWith("-")) {
-                    l = literal.substring(1);
-                    literalValue = !mainProcedure.assignedValue.get(literal);
-                }
-                else{
-                    literalValue = mainProcedure.assignedValue.get(literal);
-                }
+                Boolean literalValue = null;
+                if (mainProcedure.assignedValue.get(Math.abs(literal)) != null)
+                    if (literal < 0)
+                        literalValue = !mainProcedure.assignedValue.get(Math.abs(literal)).getValue();
+                    else
+                        literalValue = mainProcedure.assignedValue.get(Math.abs(literal)).getValue();
 
-                if (mainProcedure.assignedValue.get(literal) == null)
+                if (literalValue == null)
                     noValueLiteral.add(literal);
                 else
                     valueOfTheClause = valueOfTheClause || literalValue;
@@ -135,20 +119,71 @@ class searchMode {
 
             if (noValueLiteral.isEmpty() && valueOfTheClause == Boolean.FALSE) {
                 mainProcedure.conflictClause = new ArrayList<>(clause);
-                return "UNSAT";
+                return "CONFLICT";
             }
             if (noValueLiteral.size() == 1 && valueOfTheClause == Boolean.FALSE){
 
-                String propagateLiteral = noValueLiteral.get(0);
-                mainProcedure.assignedValue.put(propagateLiteral, Boolean.TRUE);
-                mainProcedure.procedureStack.addImpliedLiteral(propagateLiteral, Boolean.TRUE, clause);
+                Integer propagateLiteral = noValueLiteral.get(0);
+                Boolean val = Boolean.TRUE;
+
+                if ( propagateLiteral < 0){
+                    propagateLiteral = Math.abs(propagateLiteral);
+                    val = Boolean.FALSE;
+                }
+                mainProcedure.assignedValue.put(propagateLiteral, new assignedLiteral(propagateLiteral, val).setImplied(clause));
+                mainProcedure.procedureStack.addImpliedLiteral(propagateLiteral, val, clause);
                 i = 0;
 
             }
 
         }
 
-        return "NOT-UNSAT";
+        return "NOT-CONFLICT";
 
+    }
+
+    public static boolean problemIsTrue( procedureCDCL mainProcedure){
+
+        boolean problemValue = true;
+        int clauseIncompleted = 0;
+
+        for ( List<Integer> clause : mainProcedure.problem.getClauses()) {
+
+            boolean clauseValue = false;
+            int literalAssigned = 0;
+            for (Integer literal : clause) {
+
+                boolean literalValue;
+                if (mainProcedure.assignedValue.get(Math.abs(literal)) != null) {
+                    literalValue = mainProcedure.assignedValue.get(Math.abs(literal)).getValue();
+                    literalAssigned += 1;
+                }
+                else
+                    continue;
+
+                if (literal < 0)
+                    literalValue = !literalValue;
+
+                if (literalValue) {
+                    clauseValue = true;
+                    break;
+                }
+
+            }
+
+            if (!clauseValue && literalAssigned == clause.size()) {
+                problemValue = false;
+                break;
+            }
+
+            if (literalAssigned != clause.size() && !clauseValue)
+                clauseIncompleted += 1;
+
+        }
+
+        if ( clauseIncompleted > 0)
+            return false;
+
+        return problemValue;
     }
 }

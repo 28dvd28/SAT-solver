@@ -1,3 +1,5 @@
+import java.util.Map;
+
 public class Main {
 
 
@@ -6,9 +8,19 @@ public class Main {
         CNFProblem problem = new CNFProblem("Test_unsat.cnf");
 
         procedureCDCL procedure = new procedureCDCL(problem);
-        //String result = procedure.executeCDCL();
 
-        //System.out.println(result);
+        String result = procedure.executeCDCL();
+        System.out.println(result);
+
+        if ( result.startsWith("SAT") ) {
+            System.out.println("Values not assigned:");
+            for (Map.Entry<Integer, assignedLiteral> noAssigned : procedure.assignedValue.entrySet()) {
+
+                if (noAssigned.getValue() == null)
+                    System.out.println("[NOT-ASSIGNED] " + noAssigned.getKey() + " -> true/false ");
+
+            }
+        }
 
     }
 
