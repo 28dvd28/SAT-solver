@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Map;
 
 public class Main {
@@ -22,8 +23,18 @@ public class Main {
             }
         }
         else{
-            System.out.println("Final clasue: ");
-            System.out.println(procedure.problem.getClauses());
+            System.out.println("Proof: ");
+            System.out.println(procedure.proofConstructor.toString());
+
+            List<List<Integer>> subProof = procedure.proofConstructor.getEndChild();
+            while(subProof.size() > 2){
+                System.out.println("Ciao");
+                problem.resetClauses(subProof);
+                procedure = new procedureCDCL(problem);
+                result = procedure.executeCDCL();
+                System.out.println(procedure.proofConstructor.toString());
+                subProof = procedure.proofConstructor.getEndChild();
+            }
         }
 
     }

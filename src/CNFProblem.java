@@ -76,4 +76,11 @@ public class CNFProblem {
         return  this.clauses;
     }
 
+    public void resetClauses(List<List<Integer>> newClauses){
+
+        this.clauses= new ArrayList<>();
+        this.clauses.addAll(newClauses);
+
+    }
+
 }

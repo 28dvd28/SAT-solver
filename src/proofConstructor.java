@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class proofConstructor {
 
@@ -26,25 +25,38 @@ public class proofConstructor {
         }
 
         public List<Integer> getChild(){ return this.child; }
-        public proofNode contains(List<Integer> value){
+        public Map.Entry<proofNode, Integer> contains(List<Integer> value, int iterations){
+
+            Map<proofNode, Integer> returnValue = new HashMap<>();
+            returnValue.put(this, iterations);
 
             if ( this.child.equals(value))
-                return this;
+                return returnValue.entrySet().stream().toList().get(0);
             else if (this.parent1 == null && this.parent2 == null && !this.child.equals(value))
                 return null;
             else {
                 if (parent1 != null && parent2 == null)
-                    return this.parent1.contains(value);
+                    return this.parent1.contains(value, iterations++);
                 else if (parent1 == null && parent2 != null)
-                    return this.parent2.contains(value);
+                    return this.parent2.contains(value, iterations++);
                 else if (parent1 != null) {
 
-                    proofNode firstRet = parent1.contains(value);
-                    return (firstRet == null)? parent2.contains(value) : firstRet;
+                    Map.Entry<proofNode, Integer> firstRet = parent1.contains(value, iterations++);
+                    if ( firstRet != null)
+                        return (firstRet.getKey() == null)? parent2.contains(value, iterations++) : firstRet;
 
                 }
             }
             return null;
+        }
+
+        public String toString(){
+
+            if ( this.parent1 == null && this.parent2 == null)
+                return this.child.toString();
+            else
+                return "(" + this.parent1.toString() + "   " + this.parent2.toString() + ")  -> " + this.child.toString();
+
         }
 
     }
@@ -57,26 +69,67 @@ public class proofConstructor {
 
     public void addProofStep (List<Integer> p1, List<Integer> p2, List<Integer> child) {
 
-        proofNode parent1 = null;
-        proofNode parent2 = null;
+        if ( this.proofList.isEmpty() ) {
+            this.proofList.add(new proofNode(new proofNode(p1), new proofNode(p2), child));
+            return;
+        }
+
+        Map.Entry<proofNode, Integer> check1 = null;
+        Map.Entry<proofNode, Integer> check2 = null;
+
+        proofNode parent1;
+        proofNode parent2;
 
         for (proofNode n : this.proofList){
-            parent1 = n.contains(p1);
-            break;
+            check1 = n.contains(p1, 0);
+            if (check1 != null)
+                break;
         }
 
         for (proofNode n : this.proofList){
-            parent2 = n.contains(p2);
-            break;
+            check2 = n.contains(p2, 0);
+            if (check2 != null)
+                break;
         }
 
-        if (parent1 == null)
+        if (check1 == null)
             parent1 = new proofNode(p1);
-        if (parent2 == null)
-            parent2 = new proofNode(p2);
+        else if (check1.getKey() == null)
+            parent1 = new proofNode(p1);
+        else {
+            parent1 = check1.getKey();
+            if (check1.getValue().equals(0)) {
 
-        this.proofList.remove(parent1);
-        this.proofList.remove(parent2);
+                Iterator<proofNode> iterator = this.proofList.iterator();
+                while (iterator.hasNext()) {
+                    proofNode current = iterator.next();
+                    if (current.getChild().equals(check1.getKey().getChild())) {
+                        this.proofList.remove(current);
+                        break;
+                    }
+                }
+
+            }
+        }
+
+        if (check2 == null)
+            parent2 = new proofNode(p2);
+        else if (check2.getKey() == null)
+            parent2 = new proofNode(p2);
+        else {
+            parent2 = check2.getKey();
+            if (check2.getValue().equals(0)){
+
+                Iterator<proofNode> iterator = this.proofList.iterator();
+                while (iterator.hasNext()){
+                    proofNode current = iterator.next();
+                    if ( current.getChild().equals(check2.getKey().getChild())){
+                        this.proofList.remove(current);
+                        break;
+                    }
+                }
+            }
+        }
 
         proofNode node = new proofNode( parent1, parent2, child);
         this.proofList.add(node);
@@ -86,9 +139,19 @@ public class proofConstructor {
     @Override
     public String toString() {
 
-
+        String returnString = "";
+        for ( proofNode subtree: this.proofList)
+            returnString = returnString.concat(subtree.toString()).concat("\n\n");
+        return returnString;
 
     }
+
+    public List<List<Integer>> getEndChild(){
+
+        List<List<Integer>> returnList = new ArrayList<>();
+        for (proofNode p : this.proofList)
+            returnList.add(p.child);
+
+        return returnList;
+    }
 }
-
-

@@ -7,6 +7,7 @@ public class procedureCDCL {
     Map<Integer, assignedLiteral> assignedValue;
     List<List<Integer>> learning;
     List<Integer> conflictClause;
+    proofConstructor proofConstructor;
 
     public procedureCDCL(CNFProblem problem){
 
@@ -16,6 +17,7 @@ public class procedureCDCL {
 
         this.learning = new ArrayList<>();
         this.conflictClause = new ArrayList<>();
+        this.proofConstructor = new proofConstructor();
 
     }
 

@@ -57,8 +57,22 @@ public class conflictSolvingMode {
             }
         }while(changed);
 
-        if(mainProcedure.procedureStack.size() - j == 0)
+        if(mainProcedure.procedureStack.size() - j == 0) {
+
+            for ( Integer l : mainProcedure.conflictClause) {
+                if (mainProcedure.assignedValue.get(Math.abs(l)).isImplied()) {
+
+                    List<Integer> leftParent = mainProcedure.conflictClause;
+                    List<Integer> rightParent = mainProcedure.assignedValue.get(Math.abs(l)).getAncestor();
+
+                    mainProcedure.conflictClause = binaryResolution(leftParent, rightParent);
+                    mainProcedure.proofConstructor.addProofStep(leftParent, rightParent, mainProcedure.conflictClause);
+                    break;
+                }
+            }
+
             return 0;
+        }
 
 
         currentLevelAssigments = mainProcedure.procedureStack.getTopLevel();
@@ -90,7 +104,12 @@ public class conflictSolvingMode {
 
             for ( Integer l : mainProcedure.conflictClause) {
                 if (mainProcedure.assignedValue.get(Math.abs(l)).isImplied()) {
-                    mainProcedure.conflictClause = binaryResolution(mainProcedure.conflictClause, mainProcedure.assignedValue.get(Math.abs(l)).getAncestor());
+
+                    List<Integer> leftParent = mainProcedure.conflictClause;
+                    List<Integer> rightParent = mainProcedure.assignedValue.get(Math.abs(l)).getAncestor();
+
+                    mainProcedure.conflictClause = binaryResolution(leftParent, rightParent);
+                    mainProcedure.proofConstructor.addProofStep(leftParent, rightParent, mainProcedure.conflictClause);
                     break;
                 }
             }
