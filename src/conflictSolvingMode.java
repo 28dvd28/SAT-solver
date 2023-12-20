@@ -41,9 +41,7 @@ public class conflictSolvingMode {
 
     public static int conflictAnalysis(procedureCDCL mainProcedure){
 
-        ArrayList<assignedLiteral> currentLevelAssigments;
-
-        int j = 1;
+        /*int j = 1;
         boolean changed;
         do {
 
@@ -72,19 +70,37 @@ public class conflictSolvingMode {
             }
 
             return 0;
+        }*/
+        int j;
+        outerloop:
+        for ( j = mainProcedure.procedureStack.size() - 1; j>=0; j--) {
+            if (j == 0)
+                break;
+            for (assignedLiteral lit : mainProcedure.procedureStack.getLevelAt(j))
+                if (lit.isDecided())
+                    break outerloop;
         }
 
+        System.out.println("J " + j);
+        List<Integer> levelToConsider = mainProcedure.procedureStack.getLiteralAtLevel(j);
 
-        currentLevelAssigments = mainProcedure.procedureStack.getTopLevel();
+        if (j==0){
+            getEmptyClause(mainProcedure);
+            System.out.println("CONFICTCLAUSE: " + mainProcedure.conflictClause + " vdsvd");
+            return j;
+        }
+
         while (true){
 
             List<Integer> literalFalsified = new ArrayList<>();
 
-            for ( assignedLiteral l : currentLevelAssigments)
+            for ( assignedLiteral l : mainProcedure.assignedValue.values())
                 if ( mainProcedure.conflictClause.contains(l.getName()) && l.getValue() == Boolean.FALSE)
                     literalFalsified.add(l.getName());
                 else if ( mainProcedure.conflictClause.contains(-1 * l.getName()) && l.getValue() ==Boolean.TRUE)
                     literalFalsified.add(l.getName());
+
+            literalFalsified.retainAll(levelToConsider);
 
             if ( literalFalsified.size() == 1 ){
 
@@ -94,12 +110,8 @@ public class conflictSolvingMode {
                     mainProcedure.problem.learnClause(mainProcedure.conflictClause);
                 }
 
-                for (int i = mainProcedure.procedureStack.size() - 1; i >= 0; i--){
+                return j;
 
-                    if ( mainProcedure.procedureStack.getLevelAt(i).get(0).isDecided())
-                        return i;
-
-                }
             }
 
             for ( Integer l : mainProcedure.conflictClause) {
@@ -117,6 +129,34 @@ public class conflictSolvingMode {
 
         }
 
+    }
+
+    public static void getEmptyClause(procedureCDCL mainProcedure){
+
+        int c = 0;
+
+        System.out.println("Conflict clause: " + mainProcedure.conflictClause);
+        System.out.println("Stack: " + mainProcedure.procedureStack);
+
+        while (!mainProcedure.conflictClause.isEmpty() && c != 50) {
+
+            c++;
+
+            System.out.println(mainProcedure.proofConstructor);
+
+            for (Integer l : mainProcedure.conflictClause) {
+                if (mainProcedure.assignedValue.get(Math.abs(l)).isImplied() ||
+                    mainProcedure.assignedValue.get(Math.abs(l)).isConflictImplied()) {
+
+                    List<Integer> leftParent = mainProcedure.conflictClause;
+                    List<Integer> rightParent = mainProcedure.assignedValue.get(Math.abs(l)).getAncestor();
+
+                    mainProcedure.conflictClause = binaryResolution(leftParent, rightParent);
+                    mainProcedure.proofConstructor.addProofStep(leftParent, rightParent, mainProcedure.conflictClause);
+                    break;
+                }
+            }
+        }
     }
 
     private static List<Integer> binaryResolution(List<Integer> leftC, List<Integer> rightC){

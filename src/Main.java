@@ -25,16 +25,6 @@ public class Main {
         else{
             System.out.println("Proof: ");
             System.out.println(procedure.proofConstructor.toString());
-
-            List<List<Integer>> subProof = procedure.proofConstructor.getEndChild();
-            while(subProof.size() > 2){
-                System.out.println("Ciao");
-                problem.resetClauses(subProof);
-                procedure = new procedureCDCL(problem);
-                result = procedure.executeCDCL();
-                System.out.println(procedure.proofConstructor.toString());
-                subProof = procedure.proofConstructor.getEndChild();
-            }
         }
 
     }
