@@ -58,7 +58,6 @@ public class procedureCDCL {
     public String executeCDCL(){
 
         if (searchMode.unitPropagation(this).equals("CONFLICT")){
-            conflictSolvingMode.getEmptyClause(this);
             return "UNSAT";
         }
 
@@ -66,24 +65,20 @@ public class procedureCDCL {
 
         while ( !searchMode.problemIsTrue(this) ){
 
-            System.out.println(this.procedureStack);
-
             if (!afterBacktrackCycle) {
                 searchMode.pickBranchingVariable(this);
-                System.out.println(this.procedureStack);
             }else{
                 afterBacktrackCycle = false;
             }
 
             if (searchMode.unitPropagation(this).equals("CONFLICT")){
 
-                System.out.println(this.procedureStack + "||" + this.conflictClause);
-
                 int decision_level = conflictSolvingMode.conflictAnalysis(this);
 
-                System.out.println("DECISIONLEVEL " + decision_level);
+                /*if (decision_level == 0 && this.procedureStack.size() == 1)
+                    System.out.println();*/
 
-                if (decision_level <= 0) {
+                if (decision_level < 0) {
                     return "UNSAT";
                 }
                 else {
@@ -95,7 +90,7 @@ public class procedureCDCL {
 
         }
 
-        return "SAT" + " || STACK:\n" + this.procedureStack;
+        return "SAT" + "\nModel:\n" + this.procedureStack;
 
     }
 

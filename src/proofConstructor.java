@@ -35,19 +35,22 @@ public class proofConstructor {
             else if (this.parent1 == null && this.parent2 == null && !this.child.equals(value))
                 return null;
             else {
-                if (parent1 != null && parent2 == null)
-                    return this.parent1.contains(value, iterations++);
-                else if (parent1 == null && parent2 != null)
-                    return this.parent2.contains(value, iterations++);
-                else if (parent1 != null) {
+                Map.Entry<proofNode,Integer> parent1Return = null;
+                Map.Entry<proofNode, Integer> parent2Return = null;
 
-                    Map.Entry<proofNode, Integer> firstRet = parent1.contains(value, iterations++);
-                    if ( firstRet != null)
-                        return (firstRet.getKey() == null)? parent2.contains(value, iterations++) : firstRet;
+                if (parent1 != null)
+                    parent1Return = parent1.contains(value, iterations++);
+                if (parent2 != null)
+                    parent2Return = parent2.contains(value, iterations++);
 
-                }
+                if (parent1Return != null)
+                    return parent1Return;
+                else if (parent2Return != null)
+                    return parent2Return;
+                else
+                    return null;
+
             }
-            return null;
         }
 
         public String toString(){
@@ -62,12 +65,18 @@ public class proofConstructor {
     }
 
     private List<proofNode> proofList;
+    private String returnString;
 
     public proofConstructor () {
+
         this.proofList = new ArrayList<>();
+        this.returnString = "";
+
     }
 
     public void addProofStep (List<Integer> p1, List<Integer> p2, List<Integer> child) {
+
+        returnString = returnString.concat( "(" + p1 + " " + p2 + ")" + " -> " + child + "\n" );
 
         if ( this.proofList.isEmpty() ) {
             this.proofList.add(new proofNode(new proofNode(p1), new proofNode(p2), child));
@@ -139,10 +148,12 @@ public class proofConstructor {
     @Override
     public String toString() {
 
-        String returnString = "";
+       /* String returnString = "";
         for ( proofNode subtree: this.proofList)
             returnString = returnString.concat(subtree.toString()).concat("\n\n");
-        return returnString;
+        return returnString;*/
+
+        return this.returnString.toString();
 
     }
 

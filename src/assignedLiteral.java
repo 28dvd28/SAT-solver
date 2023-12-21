@@ -19,7 +19,6 @@ public class assignedLiteral {
     public assignedLiteral setDecided(){
         this.decided = Boolean.TRUE;
         this.implied = Boolean.FALSE;
-        this.conflictImplied = Boolean.FALSE;
 
         return this;
     }
@@ -27,18 +26,6 @@ public class assignedLiteral {
     public assignedLiteral setImplied(List<Integer> ancestor){
         this.decided = Boolean.FALSE;
         this.implied = Boolean.TRUE;
-        this.conflictImplied = Boolean.FALSE;
-        this.ancestor = ancestor;
-
-        return this;
-    }
-
-    public assignedLiteral setConflictImplied(List<Integer> ancestor) {
-        this.decided = Boolean.FALSE;
-        this.implied = Boolean.FALSE;
-        this.conflictImplied = Boolean.TRUE;
-
-        this.value = value;
         this.ancestor = ancestor;
 
         return this;
@@ -49,10 +36,8 @@ public class assignedLiteral {
     public List<Integer> getAncestor(){ return this.ancestor; }
     public Boolean isDecided(){ return this.decided; }
     public Boolean isImplied(){ return this.implied; }
-    public Boolean isConflictImplied(){ return this.conflictImplied; }
 
     public String toString(){
-
         return "[" + this.name + " | " + this.value + " |" + this.getAncestor() + "]";
     }
 
