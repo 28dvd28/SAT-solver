@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Map;
 
 public class Main {
@@ -13,13 +14,22 @@ public class Main {
         System.out.println(result);
 
         if ( result.startsWith("SAT") ) {
-            System.out.println("Values not assigned:");
+            String notAssignOutput = "";
             for (Map.Entry<Integer, assignedLiteral> noAssigned : procedure.assignedValue.entrySet()) {
 
                 if (noAssigned.getValue() == null)
-                    System.out.println("[NOT-ASSIGNED] " + noAssigned.getKey() + " -> true/false ");
+                    notAssignOutput = notAssignOutput.concat(" [NOT-ASSIGNED] " + noAssigned.getKey() + " -> true/false\n");
 
             }
+
+            if (!notAssignOutput.isEmpty())
+                System.out.println("Values not assigned:\n" + notAssignOutput);
+
+        }
+        else{
+            System.out.println("Proof: ");
+            System.out.println(procedure.proofConstructor.toString());
+
         }
 
     }

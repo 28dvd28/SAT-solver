@@ -36,16 +36,6 @@ public class CDCLprocedureStack {
         this.procedureStack.push(currentLevel);
     }
 
-    public void addConflictImpliedLiteral(Integer name, Boolean value, List<Integer> ancestor){
-
-        assignedLiteral literalConflictImplied = new assignedLiteral(name, value);
-        literalConflictImplied.setConflictImplied(ancestor);
-        ArrayList<assignedLiteral> newLevel = new ArrayList<>();
-        newLevel.add(literalConflictImplied);
-
-        this.procedureStack.push(newLevel);
-    }
-
     public ArrayList<assignedLiteral> deleteLevel(){
 
         return this.procedureStack.pop();
@@ -93,12 +83,9 @@ public class CDCLprocedureStack {
             for (assignedLiteral literal : level){
 
                 if ( literal.isDecided())
-                    output = output.concat("[DECIDED] " + literal.getName().toString() + " -> " + literal.getValue().toString() + "  ");
+                    output = output.concat("[DECIDED] " + literal.getName().toString() + " -> " + literal.getValue().toString() + "  \n");
                 else if ( literal.isImplied())
-                    output = output.concat("[IMPLIED] " + literal.getName().toString() + " -> " + literal.getValue().toString() + "(" + literal.getAncestor() + ")" +  "  ");
-                else if ( literal.isConflictImplied())
-                    output = output.concat("[CONFLICT-IMPLIED] " + literal.getName().toString() + " -> " + literal.getValue().toString() + "(" + literal.getAncestor() + ")" + "  ");
-
+                    output = output.concat("    [IMPLIED] " + literal.getName().toString() + " -> " + literal.getValue().toString() + "(" + literal.getAncestor() + ")" +  "  \n");
             }
 
             output = output.concat("\n");

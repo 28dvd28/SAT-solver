@@ -7,6 +7,7 @@ public class procedureCDCL {
     Map<Integer, assignedLiteral> assignedValue;
     List<List<Integer>> learning;
     List<Integer> conflictClause;
+    proofConstructor proofConstructor;
 
     public procedureCDCL(CNFProblem problem){
 
@@ -16,6 +17,7 @@ public class procedureCDCL {
 
         this.learning = new ArrayList<>();
         this.conflictClause = new ArrayList<>();
+        this.proofConstructor = new proofConstructor();
 
     }
 
@@ -63,10 +65,6 @@ public class procedureCDCL {
 
         while ( !searchMode.problemIsTrue(this) ){
 
-            System.out.print(this.procedureStack);
-
-            ArrayList<assignedLiteral> topLevel = this.procedureStack.getTopLevel();
-
             if (!afterBacktrackCycle) {
                 searchMode.pickBranchingVariable(this);
             }else{
@@ -77,8 +75,12 @@ public class procedureCDCL {
 
                 int decision_level = conflictSolvingMode.conflictAnalysis(this);
 
-                if (decision_level <= 0)
-                        return "UNSAT";
+                /*if (decision_level == 0 && this.procedureStack.size() == 1)
+                    System.out.println();*/
+
+                if (decision_level < 0) {
+                    return "UNSAT";
+                }
                 else {
                     conflictSolvingMode.backTrack(this, decision_level);
                     afterBacktrackCycle = true;
@@ -88,7 +90,7 @@ public class procedureCDCL {
 
         }
 
-        return "SAT" + " || STACK:\n" + this.procedureStack;
+        return "SAT" + "\nModel:\n" + this.procedureStack;
 
     }
 
