@@ -10,6 +10,7 @@ public class CNFProblem {
     private int variableNumber;
     private int clausesNumber;
     private List<List<Integer>> clauses = new ArrayList<>();
+    private List<Integer[]> twoWatchedLiteral;
 
     public CNFProblem(String fileName){
 
@@ -51,6 +52,22 @@ public class CNFProblem {
             e.printStackTrace();
         }
 
+
+        twoWatchedLiteral = new ArrayList<>();
+
+        Integer [] twoLiteral;
+        for( List<Integer> c : this.clauses) {
+            twoLiteral = new Integer[2];
+            if (c.size() == 1)
+                twoLiteral[0] = c.get(0);
+            else{
+                twoLiteral[0] = c.get(0);
+                twoLiteral[1] = c.get(1);
+            }
+            twoWatchedLiteral.add(twoLiteral);
+        }
+
+
     }
 
     public void learnClause(List<Integer> newClause){
@@ -82,5 +99,8 @@ public class CNFProblem {
         this.clauses.addAll(newClauses);
 
     }
+
+    public List<Integer[]> getTwoWatchedLiteral(){ return this.twoWatchedLiteral; }
+    public void updateTwoWatchedLiteral(List<Integer[]> newWatchedliterals){ this.twoWatchedLiteral = newWatchedliterals; }
 
 }

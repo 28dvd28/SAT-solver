@@ -57,6 +57,13 @@ public class conflictSolvingMode {
                 if (!mainProcedure.problem.getClauses().contains(mainProcedure.conflictClause)) {
                     mainProcedure.learning.add(mainProcedure.conflictClause);
                     mainProcedure.problem.learnClause(mainProcedure.conflictClause);
+
+                    //nella learn fase aggiungo anche il corrispettivo two watched
+                    List<Integer[]> watchedLiterals = mainProcedure.problem.getTwoWatchedLiteral();
+                    if (mainProcedure.conflictClause.size() == 1)
+                        watchedLiterals.add(new Integer[]{mainProcedure.conflictClause.get(0)});
+                    if (mainProcedure.conflictClause.size() >= 2)
+                        watchedLiterals.add(new Integer[]{mainProcedure.conflictClause.get(0), mainProcedure.conflictClause.get(1)});
                 }
 
 

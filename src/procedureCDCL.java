@@ -58,6 +58,7 @@ public class procedureCDCL {
     public String executeCDCL(){
 
         if (searchMode.unitPropagation(this).equals("CONFLICT")){
+            conflictSolvingMode.conflictAnalysis(this);
             return "UNSAT";
         }
 
