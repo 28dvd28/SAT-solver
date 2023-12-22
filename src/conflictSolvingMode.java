@@ -9,14 +9,19 @@ public class conflictSolvingMode {
         Boolean literalToChangeValue;
         ArrayList<assignedLiteral> topLevel;
 
+        if (mainProcedure.assertionLiteral < 0) {
+            literalToChange = Math.abs(mainProcedure.assertionLiteral);
+            literalToChangeValue = !mainProcedure.assignedValue.get(literalToChange).getValue();
+        }else{
+            literalToChange = Math.abs(mainProcedure.assertionLiteral);
+            literalToChangeValue = !mainProcedure.assignedValue.get(literalToChange).getValue();
+        }
+
         while (true){
 
             topLevel = mainProcedure.procedureStack.deleteLevel();
 
             if(mainProcedure.procedureStack.size() == levelToReach + 1){
-
-                literalToChange = topLevel.get(0).getName();
-                literalToChangeValue = !topLevel.get(0).getValue();
 
                 for( assignedLiteral l : topLevel )
                     mainProcedure.assignedValue.put(l.getName(), null);
@@ -52,6 +57,8 @@ public class conflictSolvingMode {
                     literalFalsified.add(l);
 
             if (literalFalsified.size() == 1) {
+
+                mainProcedure.assertionLiteral = literalFalsified.get(0);
 
                 // learning phase
                 if (!mainProcedure.problem.getClauses().contains(mainProcedure.conflictClause)) {

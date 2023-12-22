@@ -127,15 +127,16 @@ class searchMode {
                 TWL_scheme:
                 while(true) {
 
-                    System.out.println("CIAO");
-
                     Integer[] currentWatchedLiterals = watchedLiterals.get(i);
 
-                    if (! Boolean.FALSE.equals(values.get(currentWatchedLiterals[0])) && !Boolean.FALSE.equals(values.get(currentWatchedLiterals[1])))
+                    if (!Boolean.FALSE.equals(values.get(currentWatchedLiterals[0])) || !Boolean.FALSE.equals(values.get(currentWatchedLiterals[1])))
                         break;
                     else if (Boolean.FALSE.equals(values.get(currentWatchedLiterals[0])) && values.get(currentWatchedLiterals[1]) == null) {
 
                         for (Map.Entry<Integer, Boolean> x : values.entrySet()) {
+
+                            if (x.getKey().equals(currentWatchedLiterals[1]))
+                                continue;
 
                             if (x.getValue() == Boolean.TRUE || x.getValue() == null) {
                                 currentWatchedLiterals[0] = x.getKey();
@@ -153,6 +154,9 @@ class searchMode {
 
                         for (Map.Entry<Integer, Boolean> x : values.entrySet()) {
 
+                            if (x.getKey().equals(currentWatchedLiterals[0]))
+                                continue;
+
                             if (x.getValue() == Boolean.TRUE || x.getValue() == null) {
                                 currentWatchedLiterals[1] = x.getKey();
                                 watchedLiterals.set(i, currentWatchedLiterals);
@@ -160,7 +164,6 @@ class searchMode {
                             }
 
                         }
-
                         setImplication(currentWatchedLiterals[0], clause, mainProcedure);
                         i = -1;
                         break;
@@ -169,11 +172,16 @@ class searchMode {
 
                         for (Map.Entry<Integer, Boolean> x : values.entrySet()) {
 
+                            if (x.getKey().equals(currentWatchedLiterals[1]))
+                                continue;
+
                             if (x.getValue() == Boolean.TRUE || x.getValue() == null) {
                                 currentWatchedLiterals[0] = x.getKey();
                                 watchedLiterals.set(i, currentWatchedLiterals);
 
                                 for (Map.Entry<Integer, Boolean> y : values.entrySet()) {
+                                    if (y.getKey().equals(currentWatchedLiterals[0]))
+                                        continue;
                                     if (y.getValue() == Boolean.TRUE || y.getValue() == null) {
                                         currentWatchedLiterals[1] = y.getKey();
                                         watchedLiterals.set(i, currentWatchedLiterals);
@@ -181,9 +189,14 @@ class searchMode {
                                     }
                                 }
 
-                                setImplication(currentWatchedLiterals[0], clause, mainProcedure);
-                                i = -1;
-                                break TWL_scheme;
+                                if (values.get(currentWatchedLiterals[0]) == null) {
+                                    setImplication(currentWatchedLiterals[0], clause, mainProcedure);
+                                    i = -1;
+                                    break TWL_scheme;
+                                }
+                                else
+                                    continue TWL_scheme;
+
 
                             }
                         }
