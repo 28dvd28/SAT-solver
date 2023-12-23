@@ -7,11 +7,14 @@ public class Main {
 
     public static void main(String[] args) {
 
+        long startTime = System.currentTimeMillis();
+
         CNFProblem problem = new CNFProblem("Test_unsat.cnf");
 
         procedureCDCL procedure = new procedureCDCL(problem);
 
         String result = procedure.executeCDCL();
+        long endTime = System.currentTimeMillis();
         System.out.println(result);
 
         if ( result.startsWith("SAT") ) {
@@ -28,10 +31,12 @@ public class Main {
 
         }
         else{
-            System.out.println("Proof: ");
+            System.out.println("The proof for unsat is: ");
             System.out.println(procedure.proofConstructor.toString());
 
         }
+
+        System.out.println("Durata in millisecondi: " + (endTime - startTime));
 
     }
 

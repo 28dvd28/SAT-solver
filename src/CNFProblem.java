@@ -2,7 +2,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 public class CNFProblem {
@@ -52,6 +53,8 @@ public class CNFProblem {
             e.printStackTrace();
         }
 
+        subsumption();
+
 
         twoWatchedLiteral = new ArrayList<>();
 
@@ -66,7 +69,6 @@ public class CNFProblem {
             }
             twoWatchedLiteral.add(twoLiteral);
         }
-
 
     }
 
@@ -93,14 +95,26 @@ public class CNFProblem {
         return  this.clauses;
     }
 
-    public void resetClauses(List<List<Integer>> newClauses){
-
-        this.clauses= new ArrayList<>();
-        this.clauses.addAll(newClauses);
-
-    }
-
     public List<Integer[]> getTwoWatchedLiteral(){ return this.twoWatchedLiteral; }
     public void updateTwoWatchedLiteral(List<Integer[]> newWatchedliterals){ this.twoWatchedLiteral = newWatchedliterals; }
+
+    public void subsumption(){
+
+        List<List<Integer>> clauseToRemove = new ArrayList<>();
+        List<List<Integer>> copy;
+
+        for (List<Integer> c1 : this.clauses) {
+
+            copy = new ArrayList<>(this.clauses);
+            copy.remove(c1);
+
+            for (List<Integer> c2 : copy)
+                if (new HashSet<>(c2).containsAll(c1))
+                    clauseToRemove.add(c2);
+        }
+
+        this.clauses.removeAll(clauseToRemove);
+
+    }
 
 }
