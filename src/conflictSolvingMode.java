@@ -62,6 +62,17 @@ public class conflictSolvingMode {
 
                 // learning phase
                 if (!mainProcedure.problem.getClauses().contains(mainProcedure.conflictClause)) {
+
+                    // forgetting
+                    if ( mainProcedure.learning.size() > mainProcedure.problem.getClausesNumber() ){
+
+                        mainProcedure.learning.sort((list1, list2) -> Integer.compare(list2.size(), list1.size()));
+                        List<Integer> clauseToForget = mainProcedure.learning.get(0);
+                        mainProcedure.learning.remove(clauseToForget);
+                        mainProcedure.problem.forgotClause(clauseToForget);
+
+                    }
+
                     mainProcedure.learning.add(mainProcedure.conflictClause);
                     mainProcedure.problem.learnClause(mainProcedure.conflictClause);
 

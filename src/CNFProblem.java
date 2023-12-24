@@ -1,10 +1,8 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class CNFProblem {
 
@@ -13,11 +11,9 @@ public class CNFProblem {
     private List<List<Integer>> clauses = new ArrayList<>();
     private List<Integer[]> twoWatchedLiteral;
 
-    public CNFProblem(String fileName){
+    public CNFProblem(File fileName){
 
-        String filePath = "src/Input_test/" + fileName;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
 
             while ((line = br.readLine()) != null) {
@@ -40,7 +36,8 @@ public class CNFProblem {
                     List<Integer> listedLine = new ArrayList<>();
 
                     for ( String s : splitedLine )
-                        listedLine.add(Integer.parseInt(s));
+                        if (!s.isEmpty())
+                            listedLine.add(Integer.parseInt(s));
 
                     listedLine.removeIf(s -> s == 0);
 
@@ -54,7 +51,6 @@ public class CNFProblem {
         }
 
         subsumption();
-
 
         twoWatchedLiteral = new ArrayList<>();
 
@@ -80,6 +76,9 @@ public class CNFProblem {
     }
 
     public void forgotClause(List<Integer> clause){
+
+        int index = this.clauses.indexOf(clause);
+        this.twoWatchedLiteral.remove(index);
         this.clauses.remove(clause);
     }
 
