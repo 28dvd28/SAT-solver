@@ -8,6 +8,7 @@ public class procedureCDCL {
     List<List<Integer>> learning;
     List<Integer> conflictClause;
     proofConstructor proofConstructor;
+    Integer assertionLiteral;
 
     public procedureCDCL(CNFProblem problem){
 
@@ -18,6 +19,7 @@ public class procedureCDCL {
         this.learning = new ArrayList<>();
         this.conflictClause = new ArrayList<>();
         this.proofConstructor = new proofConstructor();
+        this.assertionLiteral = 0;
 
     }
 
@@ -58,6 +60,7 @@ public class procedureCDCL {
     public String executeCDCL(){
 
         if (searchMode.unitPropagation(this).equals("CONFLICT")){
+            conflictSolvingMode.conflictAnalysis(this);
             return "UNSAT";
         }
 
@@ -75,9 +78,6 @@ public class procedureCDCL {
 
                 int decision_level = conflictSolvingMode.conflictAnalysis(this);
 
-                /*if (decision_level == 0 && this.procedureStack.size() == 1)
-                    System.out.println();*/
-
                 if (decision_level < 0) {
                     return "UNSAT";
                 }
@@ -90,7 +90,7 @@ public class procedureCDCL {
 
         }
 
-        return "SAT" + "\nModel:\n" + this.procedureStack;
+        return "SAT";
 
     }
 

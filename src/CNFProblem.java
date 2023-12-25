@@ -1,21 +1,19 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class CNFProblem {
 
     private int variableNumber;
     private int clausesNumber;
     private List<List<Integer>> clauses = new ArrayList<>();
+    private List<Integer[]> twoWatchedLiteral;
 
-    public CNFProblem(String fileName){
+    public CNFProblem(File fileName){
 
-        String filePath = "src/Input_test/" + fileName;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
 
             while ((line = br.readLine()) != null) {
@@ -38,7 +36,8 @@ public class CNFProblem {
                     List<Integer> listedLine = new ArrayList<>();
 
                     for ( String s : splitedLine )
-                        listedLine.add(Integer.parseInt(s));
+                        if (!s.isEmpty())
+                            listedLine.add(Integer.parseInt(s));
 
                     listedLine.removeIf(s -> s == 0);
 
@@ -51,6 +50,22 @@ public class CNFProblem {
             e.printStackTrace();
         }
 
+        subsumption();
+
+        twoWatchedLiteral = new ArrayList<>();
+
+        Integer [] twoLiteral;
+        for( List<Integer> c : this.clauses) {
+            twoLiteral = new Integer[2];
+            if (c.size() == 1)
+                twoLiteral[0] = c.get(0);
+            else{
+                twoLiteral[0] = c.get(0);
+                twoLiteral[1] = c.get(1);
+            }
+            twoWatchedLiteral.add(twoLiteral);
+        }
+
     }
 
     public void learnClause(List<Integer> newClause){
@@ -61,6 +76,9 @@ public class CNFProblem {
     }
 
     public void forgotClause(List<Integer> clause){
+
+        int index = this.clauses.indexOf(clause);
+        this.twoWatchedLiteral.remove(index);
         this.clauses.remove(clause);
     }
 
@@ -76,10 +94,25 @@ public class CNFProblem {
         return  this.clauses;
     }
 
-    public void resetClauses(List<List<Integer>> newClauses){
+    public List<Integer[]> getTwoWatchedLiteral(){ return this.twoWatchedLiteral; }
+    public void updateTwoWatchedLiteral(List<Integer[]> newWatchedliterals){ this.twoWatchedLiteral = newWatchedliterals; }
 
-        this.clauses= new ArrayList<>();
-        this.clauses.addAll(newClauses);
+    public void subsumption(){
+
+        List<List<Integer>> clauseToRemove = new ArrayList<>();
+        List<List<Integer>> copy;
+
+        for (List<Integer> c1 : this.clauses) {
+
+            copy = new ArrayList<>(this.clauses);
+            copy.remove(c1);
+
+            for (List<Integer> c2 : copy)
+                if (new HashSet<>(c2).containsAll(c1))
+                    clauseToRemove.add(c2);
+        }
+
+        this.clauses.removeAll(clauseToRemove);
 
     }
 

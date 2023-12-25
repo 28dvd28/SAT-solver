@@ -1,6 +1,5 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.beans.Introspector;
+import java.util.*;
 
 class searchMode {
 
@@ -37,31 +36,23 @@ class searchMode {
 
         List<List<Integer>> clauses = problem.getClauses();
 
-        for (int i = 0; i < clauses.size()-1; i++) {
+        for (int i = 0; i < clauses.size(); i++) {
 
             if (clauses.get(i).size() == 1){
 
-                for (int j = i + 1; j < clauses.size(); j++)
-                    if (clausesAreOpposite(clauses.get(i), clauses.get(j), mainProcedure))
-                        return "CONFLICT";
-
-                Integer literal = clauses.get(i).get(0);
-                Boolean value = Boolean.TRUE;
-                int sign = 1;
-                if ( literal < 0 ) {
-                    literal = Math.abs(literal);
-                    value = Boolean.FALSE;
-                    sign = -1;
+                if (clauses.get(i).get(0) < 0 ){
+                    mainProcedure.procedureStack.addImpliedLiteral(Math.abs(clauses.get(i).get(0)), Boolean.FALSE, clauses.get(i));
+                    mainProcedure.assignedValue.put(Math.abs(clauses.get(i).get(0)), new assignedLiteral(Math.abs(clauses.get(i).get(0)), Boolean.FALSE).setImplied(clauses.get(i)));
+                }
+                else{
+                    mainProcedure.procedureStack.addImpliedLiteral(clauses.get(i).get(0), Boolean.TRUE, clauses.get(i));
+                    mainProcedure.assignedValue.put(clauses.get(i).get(0), new assignedLiteral(Math.abs(clauses.get(i).get(0)), Boolean.TRUE).setImplied(clauses.get(i)));
                 }
 
-                Integer finalLiteral = literal;
-                int finalSign = sign;
-                mainProcedure.procedureStack.addImpliedLiteral(literal, value, new ArrayList<>(){{ add(finalSign * finalLiteral);}});
-                mainProcedure.assignedValue.put(literal, new assignedLiteral(literal, value).setImplied( new ArrayList<>() {{ add(finalSign * finalLiteral); }}));
             }
 
-            if (containsOppositeLiteral(clauses.get(i)))
-                return "CONFLICT";
+            /*if (containsOppositeLiteral(clauses.get(i)))
+                return "CONFLICT";*/
 
         }
 
@@ -93,52 +84,153 @@ class searchMode {
     public static String afterDecisionsUnitPropagation(procedureCDCL mainProcedure){
 
         List<List<Integer>> problem = mainProcedure.problem.getClauses();
+        List<Integer[]> watchedLiterals = mainProcedure.problem.getTwoWatchedLiteral();
 
         for ( int i = 0; i < problem.size(); i++ ){
 
             List<Integer> clause = problem.get(i);
+            Map<Integer, Boolean> values = new HashMap<>();
 
-            Boolean valueOfTheClause = Boolean.FALSE;
-            List<Integer> noValueLiteral = new ArrayList<>();
+            for (Integer lit : clause){
 
-            for (Integer literal : clause){
+                if ( mainProcedure.assignedValue.get(Math.abs(lit)) == null )
+                    values.put(lit, null);
+                else{
+                    if ( lit > 0)
+                        values.put(lit, mainProcedure.assignedValue.get(lit).getValue());
 
-                Boolean literalValue = null;
-                if (mainProcedure.assignedValue.get(Math.abs(literal)) != null)
-                    if (literal < 0)
-                        literalValue = !mainProcedure.assignedValue.get(Math.abs(literal)).getValue();
                     else
-                        literalValue = mainProcedure.assignedValue.get(Math.abs(literal)).getValue();
-
-                if (literalValue == null)
-                    noValueLiteral.add(literal);
-                else
-                    valueOfTheClause = valueOfTheClause || literalValue;
-
-            }
-
-            if (noValueLiteral.isEmpty() && valueOfTheClause == Boolean.FALSE) {
-                mainProcedure.conflictClause = new ArrayList<>(clause);
-                return "CONFLICT";
-            }
-            if (noValueLiteral.size() == 1 && valueOfTheClause == Boolean.FALSE){
-
-                Integer propagateLiteral = noValueLiteral.get(0);
-                Boolean val = Boolean.TRUE;
-
-                if ( propagateLiteral < 0){
-                    propagateLiteral = Math.abs(propagateLiteral);
-                    val = Boolean.FALSE;
+                        values.put(lit, !mainProcedure.assignedValue.get(Math.abs(lit)).getValue());
                 }
-                mainProcedure.assignedValue.put(propagateLiteral, new assignedLiteral(propagateLiteral, val).setImplied(clause));
-                mainProcedure.procedureStack.addImpliedLiteral(propagateLiteral, val, clause);
-                i = 0;
 
             }
+
+            if ( clause.size() == 1){
+                if( values.get(clause.get(0)) == null) {
+                    setImplication(clause.get(0), clause, mainProcedure);
+                    i = -1;
+                    continue;
+                }
+                else{
+                    if ( values.get(clause.get(0)).equals(Boolean.TRUE) )
+                        continue;
+                    else{
+                        mainProcedure.conflictClause = clause;
+                        mainProcedure.problem.updateTwoWatchedLiteral(watchedLiterals);
+                        return "CONFLICT";
+                    }
+
+                }
+            }
+            else{
+
+                TWL_scheme:
+                while(true) {
+
+                    Integer[] currentWatchedLiterals = watchedLiterals.get(i);
+
+                    if (!Boolean.FALSE.equals(values.get(currentWatchedLiterals[0])) || !Boolean.FALSE.equals(values.get(currentWatchedLiterals[1])))
+                        break;
+                    else if (Boolean.FALSE.equals(values.get(currentWatchedLiterals[0])) && values.get(currentWatchedLiterals[1]) == null) {
+
+                        for (Map.Entry<Integer, Boolean> x : values.entrySet()) {
+
+                            if (x.getKey().equals(currentWatchedLiterals[1]))
+                                continue;
+
+                            if (x.getValue() == Boolean.TRUE || x.getValue() == null) {
+                                currentWatchedLiterals[0] = x.getKey();
+                                watchedLiterals.set(i, currentWatchedLiterals);
+                                continue TWL_scheme;
+                            }
+
+                        }
+
+                        setImplication(currentWatchedLiterals[1], clause, mainProcedure);
+                        i = -1;
+                        break;
+                    }
+                    else if (Boolean.FALSE.equals(values.get(currentWatchedLiterals[1])) && values.get(currentWatchedLiterals[0]) == null) {
+
+                        for (Map.Entry<Integer, Boolean> x : values.entrySet()) {
+
+                            if (x.getKey().equals(currentWatchedLiterals[0]))
+                                continue;
+
+                            if (x.getValue() == Boolean.TRUE || x.getValue() == null) {
+                                currentWatchedLiterals[1] = x.getKey();
+                                watchedLiterals.set(i, currentWatchedLiterals);
+                                continue TWL_scheme;
+                            }
+
+                        }
+                        setImplication(currentWatchedLiterals[0], clause, mainProcedure);
+                        i = -1;
+                        break;
+                    }
+                    else if (Boolean.FALSE.equals(values.get(currentWatchedLiterals[0])) && Boolean.FALSE.equals(values.get(currentWatchedLiterals[1]))){
+
+                        for (Map.Entry<Integer, Boolean> x : values.entrySet()) {
+
+                            if (x.getKey().equals(currentWatchedLiterals[1]))
+                                continue;
+
+                            if (x.getValue() == Boolean.TRUE || x.getValue() == null) {
+                                currentWatchedLiterals[0] = x.getKey();
+                                watchedLiterals.set(i, currentWatchedLiterals);
+
+                                for (Map.Entry<Integer, Boolean> y : values.entrySet()) {
+                                    if (y.getKey().equals(currentWatchedLiterals[0]))
+                                        continue;
+                                    if (y.getValue() == Boolean.TRUE || y.getValue() == null) {
+                                        currentWatchedLiterals[1] = y.getKey();
+                                        watchedLiterals.set(i, currentWatchedLiterals);
+                                        continue TWL_scheme;
+                                    }
+                                }
+
+                                if (values.get(currentWatchedLiterals[0]) == null) {
+                                    setImplication(currentWatchedLiterals[0], clause, mainProcedure);
+                                    i = -1;
+                                    break TWL_scheme;
+                                }
+                                else
+                                    continue TWL_scheme;
+
+
+                            }
+                        }
+
+                        mainProcedure.conflictClause = clause;
+                        mainProcedure.problem.updateTwoWatchedLiteral(watchedLiterals);
+                        return "CONFLICT";
+
+                    }
+
+                }
+            }
+
 
         }
 
+        mainProcedure.problem.updateTwoWatchedLiteral(watchedLiterals);
         return "NOT-CONFLICT";
+
+    }
+
+    private static void setImplication(Integer literal, List<Integer> ancestor, procedureCDCL mainProcedure){
+
+        Boolean value;
+
+        if (literal < 0) {
+            literal = Math.abs(literal);
+            value = Boolean.FALSE;
+        }else {
+            value = Boolean.TRUE;
+        }
+
+        mainProcedure.procedureStack.addImpliedLiteral(literal, value, ancestor);
+        mainProcedure.assignedValue.put(literal, new assignedLiteral(literal, value).setImplied(ancestor));
 
     }
 

@@ -9,14 +9,19 @@ public class conflictSolvingMode {
         Boolean literalToChangeValue;
         ArrayList<assignedLiteral> topLevel;
 
+        if (mainProcedure.assertionLiteral < 0) {
+            literalToChange = Math.abs(mainProcedure.assertionLiteral);
+            literalToChangeValue = !mainProcedure.assignedValue.get(literalToChange).getValue();
+        }else{
+            literalToChange = Math.abs(mainProcedure.assertionLiteral);
+            literalToChangeValue = !mainProcedure.assignedValue.get(literalToChange).getValue();
+        }
+
         while (true){
 
             topLevel = mainProcedure.procedureStack.deleteLevel();
 
             if(mainProcedure.procedureStack.size() == levelToReach + 1){
-
-                literalToChange = topLevel.get(0).getName();
-                literalToChangeValue = !topLevel.get(0).getValue();
 
                 for( assignedLiteral l : topLevel )
                     mainProcedure.assignedValue.put(l.getName(), null);
@@ -53,10 +58,30 @@ public class conflictSolvingMode {
 
             if (literalFalsified.size() == 1) {
 
+                mainProcedure.assertionLiteral = literalFalsified.get(0);
+
                 // learning phase
                 if (!mainProcedure.problem.getClauses().contains(mainProcedure.conflictClause)) {
+
+                    // forgetting
+                    if ( mainProcedure.learning.size() > mainProcedure.problem.getClausesNumber() ){
+
+                        mainProcedure.learning.sort((list1, list2) -> Integer.compare(list2.size(), list1.size()));
+                        List<Integer> clauseToForget = mainProcedure.learning.get(0);
+                        mainProcedure.learning.remove(clauseToForget);
+                        mainProcedure.problem.forgotClause(clauseToForget);
+
+                    }
+
                     mainProcedure.learning.add(mainProcedure.conflictClause);
                     mainProcedure.problem.learnClause(mainProcedure.conflictClause);
+
+                    //nella learn fase aggiungo anche il corrispettivo two watched
+                    List<Integer[]> watchedLiterals = mainProcedure.problem.getTwoWatchedLiteral();
+                    if (mainProcedure.conflictClause.size() == 1)
+                        watchedLiterals.add(new Integer[]{mainProcedure.conflictClause.get(0)});
+                    if (mainProcedure.conflictClause.size() >= 2)
+                        watchedLiterals.add(new Integer[]{mainProcedure.conflictClause.get(0), mainProcedure.conflictClause.get(1)});
                 }
 
 
