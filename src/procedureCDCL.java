@@ -68,8 +68,6 @@ public class procedureCDCL {
 
         while ( !searchMode.problemIsTrue(this) ){
 
-            System.out.print("ASSIGNED VAR: " + this.assignedValue.values().stream().filter(Objects::nonNull).count() + "\r");
-
             if (!afterBacktrackCycle) {
                 searchMode.pickBranchingVariable(this);
             }else{
@@ -92,7 +90,7 @@ public class procedureCDCL {
 
         }
 
-        return "SAT" + "\nModel:\n" + this.procedureStack;
+        return "SAT";
 
     }
 

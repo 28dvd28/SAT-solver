@@ -23,13 +23,14 @@ public class Main {
                         String result = procedure.executeCDCL();
 
                         if (result.startsWith("SAT")) {
-                            String notAssignOutput = "";
-                            for (Map.Entry<Integer, assignedLiteral> noAssigned : procedure.assignedValue.entrySet()) {
-                                if (noAssigned.getValue() == null)
-                                    notAssignOutput = notAssignOutput.concat(" [NOT-ASSIGNED] " + noAssigned.getKey() + " -> true/false\n");
+                            result = result.concat("\nModel:\n");
+                            for (int i = 1; i<= procedure.problem.getVariableNumber(); i++){
+                                if (procedure.assignedValue.get(i) == null)
+                                    result = result.concat(i + " -> true\n");
+                                else
+                                    result = result.concat(i + " -> " + procedure.assignedValue.get(i).getValue() + "\n");
                             }
-                            if (!notAssignOutput.isEmpty())
-                                result = result.concat("Values not assigned:\n" + notAssignOutput);
+
                         } else {
                             result = result.concat("\nThe proof for unsat is:\n");
                             result = result.concat(procedure.proofConstructor.toString());

@@ -1,74 +1,65 @@
 SAT
 Model:
-0}
-1}[DECIDED] 1 -> true  
-    [IMPLIED] 10 -> false([-1, -10])  
-    [IMPLIED] 19 -> false([-1, -19])  
-    [IMPLIED] 28 -> false([-1, -28])  
-    [IMPLIED] 37 -> false([-1, -37])  
-    [IMPLIED] 46 -> false([-1, -46])  
-    [IMPLIED] 55 -> false([-1, -55])  
-
-2}[DECIDED] 2 -> true  
-    [IMPLIED] 11 -> false([-2, -11])  
-    [IMPLIED] 20 -> false([-2, -20])  
-    [IMPLIED] 29 -> false([-2, -29])  
-    [IMPLIED] 38 -> false([-2, -38])  
-    [IMPLIED] 47 -> false([-2, -47])  
-    [IMPLIED] 56 -> false([-2, -56])  
-
-3}[DECIDED] 3 -> true  
-    [IMPLIED] 30 -> false([-3, -30])  
-    [IMPLIED] 12 -> false([-3, -12])  
-    [IMPLIED] 21 -> false([-3, -21])  
-    [IMPLIED] 39 -> false([-3, -39])  
-    [IMPLIED] 48 -> false([-3, -48])  
-    [IMPLIED] 57 -> false([-3, -57])  
-    [IMPLIED] 4 -> false([-1, -2, -3, -4])  
-    [IMPLIED] 5 -> false([-1, -2, -3, -5, 30])  
-    [IMPLIED] 6 -> false([-1, -2, -3, -6])  
-    [IMPLIED] 7 -> false([-1, -2, -3, -7, 11, 12, 28, 29, 30])  
-    [IMPLIED] 8 -> false([-1, -2, -3, -8, 11, 12, 28, 29, 30])  
-    [IMPLIED] 9 -> false([-1, -2, -3, -9])  
-
-4}[DECIDED] 13 -> true  
-    [IMPLIED] 22 -> false([-13, -22])  
-    [IMPLIED] 31 -> false([-13, -31])  
-    [IMPLIED] 40 -> false([-13, -40])  
-    [IMPLIED] 49 -> false([-13, -49])  
-    [IMPLIED] 58 -> false([-13, -58])  
-    [IMPLIED] 14 -> false([-1, -2, -3, 56, -13, -14, 29, 30, 31])  
-    [IMPLIED] 15 -> false([-1, -2, -3, 56, -13, 28, 29, -15, 30, 31])  
-    [IMPLIED] 16 -> false([-1, -2, -3, -13, 28, 29, 30, -16, 31])  
-    [IMPLIED] 17 -> false([-17, -1, -2, -3, -13, 28, 29, 30, 31])  
-    [IMPLIED] 18 -> false([-1, -18, -2, -3, -13])  
-
-5}[DECIDED] 23 -> true  
-    [IMPLIED] 32 -> false([-23, -32])  
-    [IMPLIED] 41 -> false([-23, -41])  
-    [IMPLIED] 50 -> false([-23, -50])  
-    [IMPLIED] 59 -> false([-23, -59])  
-    [IMPLIED] 24 -> false([-1, -2, -3, -23, -24, -13, 29, 30, 31, 47])  
-    [IMPLIED] 25 -> false([-1, -2, -3, -23, -25, -13, 29, 30, 31, 47])  
-    [IMPLIED] 26 -> false([-1, -2, -3, -23, -26, -13, 29, 30, 31, 47])  
-    [IMPLIED] 27 -> false([-1, -2, -3, -23, -27, -13])  
-
-6}[DECIDED] 33 -> true  
-    [IMPLIED] 42 -> false([-33, -42])  
-    [IMPLIED] 51 -> false([-33, -51])  
-    [IMPLIED] 60 -> false([-33, -60])  
-    [IMPLIED] 34 -> false([-33, -1, -34, -3, -23, 38, 56, -13, 46, 47])  
-    [IMPLIED] 35 -> false([-33, -1, -2, -35, -3, -23, -13])  
-    [IMPLIED] 36 -> false([-33, -1, -2, -3, -36, -23, -13])  
-
-7}[DECIDED] 43 -> true  
-    [IMPLIED] 52 -> false([-43, -52])  
-    [IMPLIED] 61 -> false([-43, -61])  
-    [IMPLIED] 44 -> false([-33, -1, -2, -3, -23, -43, -44, -13])  
-    [IMPLIED] 45 -> false([-33, -1, -3, -23, 56, -43, -45, -13, 47])  
-
-8}[DECIDED] 53 -> true  
-    [IMPLIED] 62 -> false([-53, -62])  
-    [IMPLIED] 63 -> true([55, 56, 57, 58, 59, 60, 61, 62, 63])  
-    [IMPLIED] 54 -> false([-54, -63])  
-
+1 -> true
+2 -> true
+3 -> true
+4 -> false
+5 -> false
+6 -> false
+7 -> false
+8 -> false
+9 -> false
+10 -> false
+11 -> false
+12 -> false
+13 -> true
+14 -> false
+15 -> false
+16 -> false
+17 -> false
+18 -> false
+19 -> false
+20 -> false
+21 -> false
+22 -> false
+23 -> true
+24 -> false
+25 -> false
+26 -> false
+27 -> false
+28 -> false
+29 -> false
+30 -> false
+31 -> false
+32 -> false
+33 -> true
+34 -> false
+35 -> false
+36 -> false
+37 -> false
+38 -> false
+39 -> false
+40 -> false
+41 -> false
+42 -> false
+43 -> true
+44 -> false
+45 -> false
+46 -> false
+47 -> false
+48 -> false
+49 -> false
+50 -> false
+51 -> false
+52 -> false
+53 -> true
+54 -> false
+55 -> false
+56 -> false
+57 -> false
+58 -> false
+59 -> false
+60 -> false
+61 -> false
+62 -> false
+63 -> true
