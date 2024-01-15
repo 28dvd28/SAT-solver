@@ -1,4 +1,4 @@
-grammar propositional_logic;
+grammar propLogic;
 
 expression
     : LPAREN expression RPAREN               # Parentheses
@@ -20,4 +20,4 @@ OR      : 'OR' ;
 NOT     : 'NOT' ;
 IMPLIES : '->' ;
 IFF     : '<->';
-VAR     : [a-zA-Z]+ ;
+VAR     : [1-9][0-9]* ;
