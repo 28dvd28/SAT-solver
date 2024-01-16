@@ -1,4 +1,5 @@
-package propLogicRecognizer;// Generated from C:/Users/cordi/Desktop/Cartella personale/Compiti scolastici/Materiale universitï¿½/Magistrale/Primo Anno/Planning and Automated Reasoning/SAT-solver/src/propLogic.g4 by ANTLR 4.13.1
+// Generated from C:/Users/cordi/Desktop/Cartella personale/Compiti scolastici/Materiale università/Magistrale/Primo Anno/Planning and Automated Reasoning/SAT-solver/src/propLogicRecognizer/propLogic.g4 by ANTLR 4.13.1
+package propLogicRecognizer;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**

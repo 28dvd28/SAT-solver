@@ -7,7 +7,6 @@ public class assignedLiteral {
     private List<Integer> ancestor;
     private Boolean decided;
     private Boolean implied;
-    private Boolean conflictImplied;
 
     public assignedLiteral(Integer name, Boolean value){
 

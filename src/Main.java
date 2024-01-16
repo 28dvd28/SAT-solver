@@ -2,7 +2,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,7 +9,15 @@ import java.util.Scanner;
 
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+
+        /**
+         * The main consist simply in the implementation of a simple stdin/stdout interface
+         * where different commands will execute the functions in which the execution starts.
+         * The sat solver itself is implemented by the class procedureCDCL, so the function
+         * implemented here just take the input, initialize the procedureCDCL object and
+         * then save the result inside a file
+         * **/
 
         Scanner scanner = new Scanner(System.in);
         helpGuide();
@@ -31,7 +38,6 @@ public class Main {
                     String fileName = command_input.split(" ")[1];
                     Path filePath = Paths.get("src","Input", fileName);
                     if (Files.exists(filePath)) {
-                        System.out.println("\nExecuting SAT SOLVER over file " + filePath);
                         singleFileCheck(filePath);
                     }
                     else
@@ -50,6 +56,11 @@ public class Main {
     }
 
     private static void helpGuide(){
+
+        /**
+         * Simply output the help guide
+         */
+
         System.out.println("=======================================");
         System.out.println("==========     SAT SOLVER     =========");
         System.out.println("=======================================\n");
@@ -62,6 +73,11 @@ public class Main {
     }
 
     private static void clearTerminal() {
+
+        /**
+         * A function that allow just to clear the terminal
+         */
+
         try {
             ProcessBuilder processBuilder;
 
@@ -80,13 +96,21 @@ public class Main {
         }
     }
 
-    private static void singleFileCheck(Path filePath) {
+    private static void singleFileCheck(Path filePath) throws Exception {
+
+        /**
+         * execute the procedure over only the single file given in input
+         */
 
         File file = filePath.toFile();
         executeProcedure(file);
     }
 
-    private static void allFilesCheck() {
+    private static void allFilesCheck() throws Exception {
+
+        /**
+         * execute the sat solver procedure over all the files inside the input folder
+         */
 
         String directoryPath = "src/Input";
         File directory = new File(directoryPath);
@@ -101,7 +125,16 @@ public class Main {
         }
     }
 
-    private static void executeProcedure(File file){
+    private static void executeProcedure(File file) throws Exception {
+
+        /**
+         * In this procedure first is checked if the file is in cnf form or not,
+         * if it is then we can execute the CDCL, otherwise it is checked if it
+         * is a txt file, if so it is translated from propositional logic to cnf
+         * then is executed the CDCL
+         */
+
+        System.out.println("\nExecuting SAT SOLVER over file " + file);
 
         if (file.toString().endsWith(".cnf")) {
 
@@ -133,9 +166,18 @@ public class Main {
                 e.printStackTrace();
             }
 
-            System.out.println("Completed evaluation for file: " + file.toString());
+            System.out.println("Completed evaluation for 0: " + file);
 
         }
+        else if ( file.toString().endsWith(".txt")){
+
+            propositionalLogicToNormalForm transformer = new propositionalLogicToNormalForm(file.toString());
+            File cnfFormFile = new File(transformer.outputFile);
+            executeProcedure(cnfFormFile);
+
+        }
+        else
+            System.out.println(">>>File not valid, the file must be a .cnf file or a .txt file.");
     }
 
 }

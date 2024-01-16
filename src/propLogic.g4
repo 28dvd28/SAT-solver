@@ -1,5 +1,7 @@
 grammar propLogic;
 
+main : expression EOF;
+
 expression
     : LPAREN expression RPAREN               # Parentheses
     | NOT expression                        # Not
@@ -20,4 +22,7 @@ OR      : 'OR' ;
 NOT     : 'NOT' ;
 IMPLIES : '->' ;
 IFF     : '<->';
-VAR     : [1-9][0-9]* ;
+
+VAR : LETTER ALPHANUMERIC* ;
+fragment LETTER : [a-zA-Z] ;
+fragment ALPHANUMERIC : [a-zA-Z0-9] ;
