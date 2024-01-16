@@ -2,6 +2,18 @@ import java.util.List;
 
 public class assignedLiteral {
 
+    /**
+     * This class implements an object that represents not only the literal itself but
+     * also its truth value, and if this value comes after a decision or an implication,
+     * saving in this case the clause that implied the value of this literal.
+     *
+     * All this feature are important during the CDCL procedure.
+     *
+     * The initialization of the literal require only indicating the literal itself, represented
+     * as an integer and the truth values saved as Boolean, the after it is set if is a decided or
+     * implied.
+     */
+
     private final Integer name;
     private Boolean value;
     private List<Integer> ancestor;

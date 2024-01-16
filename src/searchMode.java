@@ -3,6 +3,20 @@ import java.util.*;
 
 class searchMode {
 
+    /**
+     * In this class are implemented the method of the searchMode of the CDCL procedure. There are no variable and
+     * all the method are static because the creation of this class, like for conflictSolvingMode class, are just for making
+     * the structure and the code more clear, avoiding putting all in the same class with the risk of making all more complicated
+     *
+     * All the method implemented will be explained one by one in the code.
+     */
+
+    /**
+     * The pickBranchingVariable method simply decide a new literal from the ones that still have no assigned value.
+     * Since the procedure assigned value contains the literal already ordered, simply iterate over the assignedValue
+     * list till a not assigned literal is reached, then by default the decision assign as truth value TRUE, adding this
+     * into the assignedValue list and also to the procedure stack
+     */
     public static void pickBranchingVariable(procedureCDCL mainProcedure){
 
         for (Map.Entry<Integer, assignedLiteral> m : mainProcedure.assignedValue.entrySet()){
@@ -17,10 +31,13 @@ class searchMode {
 
     }
 
-    public static boolean allVariableAssigned(procedureCDCL mainProcedure){
-        return !mainProcedure.assignedValue.containsValue(null);
-    }
 
+
+    /**
+     * The unit propagation is sliced in two parts. One is executed on the level zero, deriving all the literals which
+     * truth value can be derived from the problem as it is. If the procedureStack is not empty, then is executed the
+     * propagation considering the values of the procedure stack
+     */
     public static String unitPropagation(procedureCDCL mainProcedure){
 
         if (mainProcedure.procedureStack.isEmpty())
@@ -30,6 +47,16 @@ class searchMode {
 
     }
 
+
+
+    /**
+     * The level zero propagation check on all the problem clauses and find if there is some which length is 1, so it is
+     * just a literal, so it must be TRUE, adding this information inside the procedureStack and into the assignedValue
+     * list.
+     *
+     * Then after all this process, if there is something on the procedure stack, it is executed the method that implements
+     * the propagation with the values on the stack.
+     */
     public static String levelZeroUnitPropagation(procedureCDCL mainProcedure){
 
         CNFProblem problem = mainProcedure.problem;
@@ -51,9 +78,6 @@ class searchMode {
 
             }
 
-            /*if (containsOppositeLiteral(clauses.get(i)))
-                return "CONFLICT";*/
-
         }
 
         if ( !mainProcedure.procedureStack.isEmpty() )
@@ -63,24 +87,18 @@ class searchMode {
 
     }
 
-    private static boolean containsOppositeLiteral(List<Integer> clause){
 
-        for ( Integer l : clause)
-            if (clause.contains(-1 * l))
-                return true;
 
-        return false;
-
-    }
-
-    public static boolean clausesAreOpposite(List<Integer> clause1, List<Integer> clause2, procedureCDCL mainProcedure){
-
-        if ( clause1.size() == 1 && clause2.size() == 1 )
-            return clause1.get(0) == -1 * clause2.get(0);
-        return false;
-
-    }
-
+    /**
+     * This method implements the propagation decision using the two watched literals technique.
+     *
+     * So it iterates all over the clauses in the problems, and for each clause make this checks:
+     *      -for each literal in the clause save its value (TRUE, FALSE, null) into a list
+     *      -check if is a clause with only one literal and if it is FALSE then return conflict,
+     *       if it is TRUE do nothing, otherwise if null make an implication
+     *      -if the length of the clauses is more than one then it is applied the two watched literals technique.
+     *       For each step check in the code to see a better explanation of the implementation of this technique.
+     */
     public static String afterDecisionsUnitPropagation(procedureCDCL mainProcedure){
 
         List<List<Integer>> problem = mainProcedure.problem.getClauses();
@@ -129,6 +147,13 @@ class searchMode {
 
                     Integer[] currentWatchedLiterals = watchedLiterals.get(i);
 
+                    /**
+                     * -If both are not false (so both are null or TRUE) then break
+                     * -If one is false and the other is null, and is the only one than add the correspondent literal as an implied literal,
+                     *  otherwise continue to the next clause
+                     * -If both are false check if there is one other literal which value is true or null and change the two watched ones
+                     *  otherwise if there exists non, the end of the code is reached and the CONFLICT string is returned.
+                     */
                     if (!Boolean.FALSE.equals(values.get(currentWatchedLiterals[0])) || !Boolean.FALSE.equals(values.get(currentWatchedLiterals[1])))
                         break;
                     else if (Boolean.FALSE.equals(values.get(currentWatchedLiterals[0])) && values.get(currentWatchedLiterals[1]) == null) {
@@ -213,11 +238,18 @@ class searchMode {
 
         }
 
+        /** When i get here no other action can be made and a return a non conflict output */
         mainProcedure.problem.updateTwoWatchedLiteral(watchedLiterals);
         return "NOT-CONFLICT";
 
     }
 
+
+
+    /**
+     * A method to just make the implication of a literal easier, adding it to the procedure stack and to
+     * the assigned values list.
+     */
     private static void setImplication(Integer literal, List<Integer> ancestor, procedureCDCL mainProcedure){
 
         Boolean value;
@@ -234,6 +266,13 @@ class searchMode {
 
     }
 
+
+
+    /**
+     * This method is used inside the main algorithm in the procedureCDCL class and return TRUE if the problem
+     * value is true, FALSE otherwise. So false in this case is not indicating that the problem is unsatisfiable.
+     * In the procedure algorithm if this get TRUE means that the problem is satisfiable and return the model.
+     */
     public static boolean problemIsTrue( procedureCDCL mainProcedure){
 
         boolean problemValue = true;

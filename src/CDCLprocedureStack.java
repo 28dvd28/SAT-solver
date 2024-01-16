@@ -5,6 +5,18 @@ import java.util.Stack;
 
 public class CDCLprocedureStack {
 
+    /**
+     * This class implements the stack of the CDCL procedure. It is just a normal stack but each element
+     * of the stack is a List of assigned literal.
+     *
+     * The implementation is very simple, with the method
+     * addDecidedLiteral that add a decided literal generating a new level because in the CDCL every decision
+     * make a new level in the stack. The method addImpliedLiteral just add a new implied literal to the last level.
+     *
+     * Useful method for the backtrack phase is the deleteLevel that simply remove the top level and the method getLevelAt
+     * is for get all the literal at a given level, important during the checks made during the explain process.
+     */
+
     private Stack<ArrayList<assignedLiteral>> procedureStack;
 
     public CDCLprocedureStack(){
