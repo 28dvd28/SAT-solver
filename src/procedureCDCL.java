@@ -2,6 +2,20 @@ import java.util.*;
 
 public class procedureCDCL {
 
+    /**
+     * Class that implements the CDCL procedure.
+     *
+     * A little description over the variables in this class:
+     *      problem: contains the CNF problem with the clauses and the two watched literal
+     *      procedureStack: is an object that implements the CDCL stack
+     *      assignedValue: is a map that bind a literals (Integer) to an assigned value. An assigned value tells if it is decided or implied.
+     *                     If it is implied contains also the clause of its implication. If there is no assignment the value is null
+     *      learning: is the list of all learned clauses
+     *      conflictClause: when it is get a conflict clause it is saved in this list
+     *      assertionLiteral: contains the literal that makes the conflict clause an assertion clause
+     *      proofConstructor: an object that compute and save the proof in case it is an UNSAT problem
+     */
+
     CNFProblem problem;
     CDCLprocedureStack procedureStack;
     Map<Integer, assignedLiteral> assignedValue;
@@ -25,10 +39,12 @@ public class procedureCDCL {
 
     private HashMap<Integer, assignedLiteral> initializeVariables(){
 
-        // This method was designed to create a map that identifies for each literal the value assigned to it, if it was assigned.
-        // To apply the VSIDS heuristic, it has been created a map ordered so that the first values are the most frequent ones
-        // so that at runtime, to make the decision just iterate over the map and the first not assigned is decided.
-        // All the others after it will be less frequent than the one selected.
+        /**
+         * This method was designed to create a map that identifies for each literal the value assigned to it, if it was assigned.
+         * To apply the VSIDS heuristic, it has been created a map ordered so that the first values are the most frequent ones
+         * so that at runtime, to make the decision just iterate over the map and the first not assigned is decided.
+         * All the others after it will be less frequent than the one selected.
+         */
 
         Map<Integer, Integer> counterOccurence = new HashMap<>();
 
@@ -58,6 +74,17 @@ public class procedureCDCL {
 
 
     public String executeCDCL(){
+
+        /**
+         *
+         * The method that implements the core of the SAT solver. In order to get a more readable code
+         * All the functions used in the following lines are implemented into two different static classes,
+         * in order to use them without initialization.
+         * The two classes are:
+         *      -searchMode -> decision and propagation are implemented in this class
+         *      -conflictSolvingMode -> explain and backtrack are implemented here
+         *
+         */
 
         if (searchMode.unitPropagation(this).equals("CONFLICT")){
             conflictSolvingMode.conflictAnalysis(this);

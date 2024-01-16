@@ -6,6 +6,21 @@ import java.util.*;
 
 public class CNFProblem {
 
+    /**
+     * This class when initialized starts reading the .cnf file given as parameter and save the clauses in input.
+     * The clauses are saved into a list of lists of integers where each integer is a literal and all the lists are the
+     * clauses of the problem. The 0 is eliminated because is obvious that all the list are into a conjunction
+     *
+     * It is also initialized the two watched literal technique for the propagation in which it is generated a list
+     * where in each position are saved the two literals firstly watched of the correspondent clause.
+     *
+     * There are other methods which description can be read in some comments in the following lines.
+     *
+     * In general this class will be used during the execution of the all procedure because it will save the
+     * clauses of the problem to be resolved, at which will be added also the new clauses, and also the two watched literals
+     * that will update during the execution
+     */
+
     private int variableNumber;
     private int clausesNumber;
     private List<List<Integer>> clauses = new ArrayList<>();
@@ -70,12 +85,23 @@ public class CNFProblem {
 
     public void learnClause(List<Integer> newClause){
 
+        /**
+         * method implemented for adding new clause to the problem,
+         * process that constitute the learning phase. The two watched literals will
+         * be updated separately
+         */
+
         if (!this.clauses.contains(newClause))
             this.clauses.add(newClause);
 
     }
 
     public void forgotClause(List<Integer> clause){
+
+        /**
+         * remove a clause from the problem and its correspondent two watched literals,
+         * necessary during the forgetting process
+         */
 
         int index = this.clauses.indexOf(clause);
         this.twoWatchedLiteral.remove(index);
@@ -95,9 +121,24 @@ public class CNFProblem {
     }
 
     public List<Integer[]> getTwoWatchedLiteral(){ return this.twoWatchedLiteral; }
-    public void updateTwoWatchedLiteral(List<Integer[]> newWatchedliterals){ this.twoWatchedLiteral = newWatchedliterals; }
+    public void updateTwoWatchedLiteral(List<Integer[]> newWatchedliterals){
+
+        /**
+         *
+         * Function with which the two watched literals list will be updated,
+         * adding new elements or modifying the ones already present
+         */
+
+        this.twoWatchedLiteral = newWatchedliterals;
+    }
 
     public void subsumption(){
+
+        /**
+         * Implementation of the subsumption, where are made an iteration all over
+         * the clauses. Once finding ones that contains another, this is saved and at the end is removed
+         * from the problem clause, so the problem is definitely smaller
+         */
 
         List<List<Integer>> clauseToRemove = new ArrayList<>();
         List<List<Integer>> copy;

@@ -1,0 +1,1 @@
+(Q1 AND Q2) AND NOT (Q1 AND Q2)
