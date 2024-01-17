@@ -12,20 +12,33 @@ class searchMode {
      */
 
     /**
-     * The pickBranchingVariable method simply decide a new literal from the ones that still have no assigned value.
+     * The pickBranchingVariable method simply decide a new literal from the ones that still have no assigned value. It
+     * implements a part of the VSIDS technique.
+     *
      * Since the procedure assigned value contains the literal already ordered, simply iterate over the assignedValue
-     * list till a not assigned literal is reached, then by default the decision assign as truth value TRUE, adding this
-     * into the assignedValue list and also to the procedure stack
+     * list till a not assigned literal is reached. Then it will check into the counter map if it gets a higher counter
+     * the positive or the negative literal, then it will get a congruent decision. Since the assignedValue is ordered after
+     * a new conflict clause is reached, the first not assigned literal is for sure the one with the higher counter.
      */
     public static void pickBranchingVariable(procedureCDCL mainProcedure){
 
         for (Map.Entry<Integer, assignedLiteral> m : mainProcedure.assignedValue.entrySet()){
             if (m.getValue() == null){
 
-                mainProcedure.assignedValue.put(m.getKey(), new assignedLiteral(m.getKey(), Boolean.TRUE).setDecided());
-                mainProcedure.procedureStack.addDecidedLiteral(m.getKey(), Boolean.TRUE);
-                break;
+                if ( mainProcedure.counterVSIDS.get(m.getKey()) >= mainProcedure.counterVSIDS.get(-1 * m.getKey())) {
 
+                    mainProcedure.assignedValue.put(m.getKey(), new assignedLiteral(m.getKey(), Boolean.TRUE).setDecided());
+                    mainProcedure.procedureStack.addDecidedLiteral(m.getKey(), Boolean.TRUE);
+
+                }
+                else {
+
+                    mainProcedure.assignedValue.put(m.getKey(), new assignedLiteral(m.getKey(), Boolean.FALSE).setDecided());
+                    mainProcedure.procedureStack.addDecidedLiteral(m.getKey(), Boolean.FALSE);
+
+                }
+
+                break;
             }
         }
 
@@ -241,6 +254,33 @@ class searchMode {
         /** When i get here no other action can be made and a return a non conflict output */
         mainProcedure.problem.updateTwoWatchedLiteral(watchedLiterals);
         return "NOT-CONFLICT";
+
+    }
+
+
+    /**
+     * This method implements parts of the usage of the VSIDS. Basically it update the counting list counterVSIDS into the
+     * mainProcedure and then based on the result obtained he changes the order of the assignedValues map. In this
+     * way, during the decision part, the first not assigned literal will be the ones still not assigned that appears
+     * in the most conflict clause.
+     */
+    public static void conflictCountingVSIDS(procedureCDCL mainProcedure){
+
+        for (Integer literal : mainProcedure.conflictClause) {
+            Integer current = mainProcedure.counterVSIDS.get(literal);
+            mainProcedure.counterVSIDS.replace(literal, current + 1);
+        }
+
+        List<Map.Entry<Integer, Integer>> ordinatedList = new ArrayList<>(mainProcedure.counterVSIDS.entrySet());
+        ordinatedList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
+        LinkedHashMap <Integer, assignedLiteral> ordinatedMap = new LinkedHashMap<>();
+        for (Map.Entry<Integer, Integer> entry : ordinatedList){
+            if ( !ordinatedMap.containsKey(Math.abs(entry.getKey())) )
+                ordinatedMap.put(Math.abs(entry.getKey()), mainProcedure.assignedValue.get(Math.abs(entry.getKey())));
+        }
+
+        mainProcedure.assignedValue = new LinkedHashMap<>(ordinatedMap);
 
     }
 

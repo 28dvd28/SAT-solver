@@ -154,8 +154,12 @@ public class Main {
                 }
 
             } else {
-                result = result.concat("\nThe proof for unsat is:\n");
-                result = result.concat(procedure.proofConstructor.toString());
+
+                if (procedure.proofConstructor.size() < 500) {
+                    result = result.concat("\nThe proof for unsat is:\n");
+                    result = result.concat(procedure.proofConstructor.toString());
+                }else
+                    result = result.concat("\nThe proof is too big, so it goes beyond the human understanding\n");
             }
 
             String outputFile = "src/Output/" + file.toString().substring(10, file.toString().length() - 4) + ".txt";
@@ -166,7 +170,7 @@ public class Main {
                 e.printStackTrace();
             }
 
-            System.out.println("Completed evaluation for 0: " + file);
+            System.out.println("Completed evaluation for: " + file);
 
         }
         else if ( file.toString().endsWith(".txt")){

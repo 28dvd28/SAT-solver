@@ -3,6 +3,28 @@ import java.util.*;
 
 public class conflictSolvingMode {
 
+    /**
+     * Like the searchMode class, also the conflictSolvingMode class is a static class created just to make the
+     * organization of the project and the code more readable. The conflict solving mode class contains all the methods
+     * for the resolution of a conflict, so the explain procedure that get to an assertion clause or to an empty clause,
+     * so to an UNSAT output. If an assertion clause is reached it will return the level to backtrack.
+     *
+     * It is also implemented the backtrack algorithm which given the level to reach it will clear all the procedure stack
+     * till the level indicated, adding also the assertion literal as implied in that level.
+     *
+     * Look to the code to get a better explanation for each method and its implementation
+     */
+
+
+    /**
+     * As described before, backtrack method takes in input a level to reach, and then it will delete each level on the stack,
+     * deleting also all the assignment to each literal into the assignment map.
+     *
+     * Firstly it gets what value should the assertion literal assume, so if it gets a literal lower than zero, he will
+     * change it into a positive one but the truth value that it will get will be false, otherwise true.
+     * Then level after level, it will clear the procedure stack, getting the literals to that levels and putting
+     * the assignment to that literals to a null values into the assigedValue map.
+     */
     public static void backTrack(procedureCDCL mainProcedure,int levelToReach){
 
         Integer literalToChange;
@@ -42,9 +64,18 @@ public class conflictSolvingMode {
     }
 
 
+    /**
+     *
+     */
     public static int conflictAnalysis(procedureCDCL mainProcedure) {
 
         List<Integer> levelToConsider = mainProcedure.procedureStack.getLiteralAtLevel(mainProcedure.procedureStack.size() - 1);
+
+        Map<Integer, assignedLiteral> topLevelAssignement = new LinkedHashMap<>();
+        for ( assignedLiteral al : mainProcedure.procedureStack.getTopLevel() )
+            topLevelAssignement.put(al.getName(), al);
+
+
         while (true) {
 
             if (mainProcedure.conflictClause.isEmpty())
@@ -109,9 +140,12 @@ public class conflictSolvingMode {
             }
 
             List<Integer> leftParent = mainProcedure.conflictClause;
-            List<Integer> rightParent = fittestExplainClause(mainProcedure.conflictClause, mainProcedure.assignedValue);
+            List<Integer> rightParent = fittestExplainClause(mainProcedure.conflictClause, topLevelAssignement);
             mainProcedure.conflictClause = binaryResolution(leftParent, rightParent);
-            mainProcedure.proofConstructor.addProofStep(leftParent, rightParent, mainProcedure.conflictClause);
+
+            /** The proof generation is automatically turned off when is getting too big for a human to read it */
+            if (mainProcedure.proofConstructor.size() <= 500)
+                mainProcedure.proofConstructor.addProofStep(leftParent, rightParent, mainProcedure.conflictClause);
 
         }
 

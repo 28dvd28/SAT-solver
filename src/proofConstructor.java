@@ -75,4 +75,8 @@ public class proofConstructor {
 
     }
 
+    public int size(){
+        return this.returnProof.size();
+    }
+
 }
