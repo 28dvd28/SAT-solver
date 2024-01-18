@@ -134,9 +134,11 @@ public class Main {
          * then is executed the CDCL
          */
 
-        System.out.println("\nExecuting SAT SOLVER over file " + file);
-
         if (file.toString().endsWith(".cnf")) {
+
+            System.out.println("\nExecuting SAT SOLVER over file " + file);
+
+            long start = System.currentTimeMillis();
 
             CNFProblem problem = new CNFProblem(file);
 
@@ -170,10 +172,14 @@ public class Main {
                 e.printStackTrace();
             }
 
-            System.out.println("Completed evaluation for: " + file);
+            long stop = System.currentTimeMillis();
+
+            System.out.println("Completed evaluation for: " + file + ". Execution time: " + (stop-start));
 
         }
         else if ( file.toString().endsWith(".txt")){
+
+            System.out.print("\nTransforming into cnf the file " + file);
 
             propositionalLogicToNormalForm transformer = new propositionalLogicToNormalForm(file.toString());
             File cnfFormFile = new File(transformer.outputFile);

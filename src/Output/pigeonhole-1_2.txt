@@ -1,0 +1,4 @@
+UNSAT
+The proof for unsat is:
+([-1, -2] [1]) -> [-2]
+([-2] [2]) -> []
