@@ -19,6 +19,7 @@ public class procedureCDCL {
     CNFProblem problem;
     CDCLprocedureStack procedureStack;
     Map<Integer, assignedLiteral> assignedValue;
+    Map<Integer, Integer> counterVSIDS;
     List<List<Integer>> learning;
     List<Integer> conflictClause;
     proofConstructor proofConstructor;
@@ -30,6 +31,12 @@ public class procedureCDCL {
         this.procedureStack = new CDCLprocedureStack();
         this.assignedValue = initializeVariables();
 
+        counterVSIDS = new HashMap<>();
+        for (Integer key : assignedValue.keySet()) {
+            counterVSIDS.put(key, 0);
+            counterVSIDS.put(-1*key, 0);
+        }
+
         this.learning = new ArrayList<>();
         this.conflictClause = new ArrayList<>();
         this.proofConstructor = new proofConstructor();
@@ -37,7 +44,7 @@ public class procedureCDCL {
 
     }
 
-    private HashMap<Integer, assignedLiteral> initializeVariables(){
+    private LinkedHashMap<Integer, assignedLiteral> initializeVariables(){
 
         /**
          * This method was designed to create a map that identifies for each literal the value assigned to it, if it was assigned.
@@ -102,6 +109,8 @@ public class procedureCDCL {
             }
 
             if (searchMode.unitPropagation(this).equals("CONFLICT")){
+
+                searchMode.conflictCountingVSIDS(this);
 
                 int decision_level = conflictSolvingMode.conflictAnalysis(this);
 

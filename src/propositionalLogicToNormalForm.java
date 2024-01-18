@@ -14,10 +14,8 @@ public class propositionalLogicToNormalForm {
 
     public propositionalLogicToNormalForm(String filePath) throws Exception {
 
-        // Leggi il contenuto del file di testo
         CharStream input = CharStreams.fromFileName(filePath);
 
-        // Crea un lexer usando la grammatica generata
         propLogicLexer lexer = new propLogicLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         propLogicParser parser = new propLogicParser(tokens);
