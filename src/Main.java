@@ -20,10 +20,18 @@ public class Main {
          * **/
 
         Scanner scanner = new Scanner(System.in);
-        helpGuide();
 
         String command_input = "";
+        boolean begin = true;
         while ( !command_input.equals("quit") ) {
+
+            System.out.println("\n=======================================");
+            System.out.println("==========     SAT SOLVER     =========");
+            System.out.println("=======================================\n");
+            if (begin) {
+                helpGuide();
+                begin = false;
+            }
             System.out.print(">>>");
             command_input = scanner.nextLine();
 
@@ -61,9 +69,6 @@ public class Main {
          * Simply output the help guide
          */
 
-        System.out.println("=======================================");
-        System.out.println("==========     SAT SOLVER     =========");
-        System.out.println("=======================================\n");
         System.out.println("Commands ");
         System.out.println("    > all: to check the satisfiability of all the files in the input folder");
         System.out.println("    > file 'filename': to check the satisfiability of only the single file indicated");
@@ -94,6 +99,7 @@ public class Main {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
+
     }
 
     private static void singleFileCheck(Path filePath) throws Exception {
