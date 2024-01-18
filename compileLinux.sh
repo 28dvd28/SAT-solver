@@ -1,12 +1,11 @@
 #!/bin/bash
 
-mkdir outTest
-mkdir outTest/propLogicRecognizer
+mkdir outCompiled
 
-javac -d outTest/propLogicRecognizer -cp lib/antlr4-runtime-4.13.1.jar src/propLogicRecognizer/*.java
-cp src/propLogicRecognizer/propLogic.interp outTest/propLogicRecognizer
-cp src/propLogicRecognizer/propLogic.tokens outTest/propLogicRecognizer
-cp src/propLogicRecognizer/propLogicLexer.interp outTest/propLogicRecognizer
-cp src/propLogicRecognizer/propLogicLexer.tokens outTest/propLogicRecognizer
+javac -d outCompiled -cp lib/antlr4-runtime-4.13.1.jar src/propLogicRecognizer/*.java
+cp src/propLogicRecognizer/propLogic.interp outCompiled/propLogicRecognizer
+cp src/propLogicRecognizer/propLogic.tokens outCompiled/propLogicRecognizer
+cp src/propLogicRecognizer/propLogicLexer.interp outCompiled/propLogicRecognizer
+cp src/propLogicRecognizer/propLogicLexer.tokens outCompiled/propLogicRecognizer
 
-javac -d outTest -cp lib/antlr4-runtime-4.13.1.jar:src src/*.java
+javac -d outCompiled -cp lib/antlr4-runtime-4.13.1.jar:src src/*.java
