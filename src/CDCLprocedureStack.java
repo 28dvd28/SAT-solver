@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
@@ -75,12 +74,6 @@ public class CDCLprocedureStack {
             definedLiteral.add(literal.getName());
 
         return definedLiteral;
-
-    }
-
-    public ArrayList<assignedLiteral> getLevelAt(int index){
-
-        return this.procedureStack.elementAt(index);
 
     }
 
