@@ -5,10 +5,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 
 public class Main {
+
+    private List<String> wrongLabeled = new ArrayList<>();
     public static void main(String[] args) throws Exception {
 
         /**
@@ -37,8 +41,19 @@ public class Main {
 
             if (command_input.equals("help"))
                 helpGuide();
-            else if (command_input.equals("all"))
-                allFilesCheck();
+            else if (command_input.startsWith("all")) {
+                if ( command_input.equals("all") )
+                    allFilesCheck("none");
+                else{
+                    String[] fileLabel = command_input.split(" ");
+                    if (fileLabel.length > 2)
+                        System.out.println(">>>Wrong number of parameters");
+                    else if ( !(fileLabel[1].equals("sat") || fileLabel[1].equals("unsat")) )
+                        System.out.println(">>>To indicate the label you must use 'sat' or 'unsat' strings");
+                    else
+                        allFilesCheck(fileLabel[1]);
+                }
+            }
             else if ( command_input.startsWith("file")  )
                 if ( command_input.equals(("file")) )
                     System.out.println(">>>Expected a file name after the command");
@@ -71,6 +86,9 @@ public class Main {
 
         System.out.println("Commands ");
         System.out.println("    > all: to check the satisfiability of all the files in the input folder");
+        System.out.println("    > all sat/unsat: to check the satisfiability of all the files in the input folder that are all sat or unsat");
+        System.out.println("                     indicated as parameter. At the end it will output also a percentage of the wrong answer");
+        System.out.println("                     indicating the files which output was wrong");
         System.out.println("    > file 'filename': to check the satisfiability of only the single file indicated");
         System.out.println("    > help: to show again this guide");
         System.out.println("    > clear: to clear the terminal");
@@ -109,10 +127,10 @@ public class Main {
          */
 
         File file = filePath.toFile();
-        executeProcedure(file);
+        executeProcedure(file, "none");
     }
 
-    private static void allFilesCheck() throws Exception {
+    private static void allFilesCheck(String expectedLabelling) throws Exception {
 
         /**
          * execute the sat solver procedure over all the files inside the input folder
@@ -120,18 +138,31 @@ public class Main {
 
         String directoryPath = "src/Input";
         File directory = new File(directoryPath);
+
+        List<String> wrongLabeled = new ArrayList<>();
+
         if (directory.exists() && directory.isDirectory()) {
             File[] files = directory.listFiles();
 
             if (files != null) {
                 for (File file : files) {
-                    executeProcedure(file);
+                    boolean isWrong = executeProcedure(file, expectedLabelling);
+                    if (isWrong)
+                        wrongLabeled.add(file.toString());
                 }
             }
         }
+
+        if ( expectedLabelling.equals("sat") || expectedLabelling.equals("unsat") ) {
+            System.out.println("Wrong sat solver returning values: " + wrongLabeled.size());
+            System.out.println("Over the files: ");
+            if (!wrongLabeled.isEmpty())
+                for (String s : wrongLabeled)
+                    System.out.println("    " + s);
+        }
     }
 
-    private static void executeProcedure(File file) throws Exception {
+    private static boolean executeProcedure(File file, String expectedLabelling) throws Exception {
 
         /**
          * In this procedure first is checked if the file is in cnf form or not,
@@ -142,6 +173,8 @@ public class Main {
 
         if (file.toString().endsWith(".cnf")) {
 
+            boolean wrong = false;
+
             System.out.println("\nExecuting SAT SOLVER over file " + file);
 
             long start = System.currentTimeMillis();
@@ -151,6 +184,11 @@ public class Main {
             procedureCDCL procedure = new procedureCDCL(problem);
 
             String result = procedure.executeCDCL();
+
+            if (expectedLabelling.equals("sat") && result.startsWith("UNSAT"))
+                wrong = true;
+            if (expectedLabelling.equals("unsat") && result.startsWith("SAT"))
+                wrong = true;
 
             if (result.startsWith("SAT")) {
                 result = result.concat("\nModel:\n");
@@ -180,7 +218,8 @@ public class Main {
 
             long stop = System.currentTimeMillis();
 
-            System.out.println("Completed evaluation for: " + file + ". Execution time: " + (stop-start));
+            System.out.println("Completed evaluation for: " + file + " in time: " + (stop-start) + "ms");
+            return wrong;
 
         }
         else if ( file.toString().endsWith(".txt")){
@@ -189,11 +228,12 @@ public class Main {
 
             propositionalLogicToNormalForm transformer = new propositionalLogicToNormalForm(file.toString());
             File cnfFormFile = new File(transformer.outputFile);
-            executeProcedure(cnfFormFile);
+            return executeProcedure(cnfFormFile, expectedLabelling);
 
         }
         else
             System.out.println(">>>File not valid, the file must be a .cnf file or a .txt file.");
+            return false;
     }
 
 }

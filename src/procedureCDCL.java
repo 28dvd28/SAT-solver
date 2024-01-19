@@ -17,6 +17,7 @@ public class procedureCDCL {
      */
 
     CNFProblem problem;
+    List<List<Integer>> originalProblem;
     CDCLprocedureStack procedureStack;
     Map<Integer, assignedLiteral> assignedValue;
     Map<Integer, Integer> counterVSIDS;
@@ -28,6 +29,7 @@ public class procedureCDCL {
     public procedureCDCL(CNFProblem problem){
 
         this.problem = problem;
+        this.originalProblem = problem.getClauses();
         this.procedureStack = new CDCLprocedureStack();
         this.assignedValue = initializeVariables();
 
