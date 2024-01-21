@@ -17,6 +17,29 @@ the result into a cnf file in the input folder and then starting the resolution 
 translation from propositional logic to cnf form use the Tsenin Encoding rules, in order to get
 an equisatisfiable cnf problem.
 
+Inside the input folder there are already some files. The pigeonhole problem from the case with 1 hole and
+2 pigeons till the case with 7 holes and 8 pigeons. Some files in propositional logic and some files from
+https://www.cs.ubc.ca/~hoos/SATLIB/benchm.html website. In particular the files starting with *'uu'* are 
+unsatisfiable problems, the ones starting with *'u'* contains satisfiable problems.
+
+### Writing file in proposition logic
+So if it is found a .txt file into the input folder then the solver will procede with te traduction into
+ECNF. This transduction is then saved into a .cnf file inside the input folder, so is important in the execution 
+with command *all* (see input prompt section) to delete previous generated .cnf files, otherwise the solver will
+be executed twice, on the file .txt and on the correspondent .cnf file.
+
+To write correctly a propositional formula into the .txt file is important to use the following syntax:
+  - Variables can start with an uppercase or lowercase letter, but not with numbers which can be used from the second symbol. The variable 2Person is not valid, the variable P3rson2 is valid.
+  - NOT: is the symbol for the negation
+  - AND: is the symbol for the conjunction
+  - OR: is the symbol for the disjunction
+  - ->: is the symbol for the implication
+  - <->: is the symbol that represent if and only if statement
+
+All the rules of the propositional logic must be followed, like the priority between symbols and their meaning. 
+To change priority inside the formula is possible to use *(* and *)* parenthesis. The formula can be written on more
+lines. Some examples can be found already in the *Input* folder and are named as *testPropLogicFile*.
+
 ## Compiling and starting the sat solver 
 Before starting the execution, you will have to compile the files. To make things easier it has been 
 created some shell and batch script, depending on your OS, that you can use to compile and execute the sat solver.
@@ -35,16 +58,20 @@ folder, not in any other folder. Then from here you can launch the scripts.
 - ./execLinux.sh: will start the execution of the sat solver
 
 ## INPUT PROMPT
-The sat solver uses a stdin/stdout interface to make the user interact with it. All the comands
+The sat solver uses a stdin/stdout interface to make the user interact with it. All the commands
 will be also desplayed at the starting of the software, anyway a short description is given also here:
 
-- help: will output the commands with a short explanation about their usage
-- clear: to clear the terminal
-- quit: for turning off the sat solver
-- file *'fileName.txt/cnf'*: will start the resolution over the only indicated file. Important is that this
-  file must be inside the *Input* folder and that only tha file name must be given in input, not the all path
-  because the sat solver will search inside the Input folder.
-- all: for making the execution over the all file inside the input folder
+- **help**: will output the commands with a short explanation about their usage
+- **clear**: to clear the terminal
+- **quit**: for turning off the sat solver
+- **file *'fileName.txt/cnf'***: will start the resolution over the only indicated file. Important is that this
+  file must be inside the *Input* folder and that only the file name must be given in input, not the all path
+  because the sat solver will automatically search inside the Input folder.
+- **all**: for making the execution over the all file inside the input folder. At the end it will be show how many
+       satisfiable and unsatisfiable problems have been found. Then to have a short output about the result for
+       each file, when the solver will ask you, insert _y_ and then press enter, otherwise press _n_. If you want
+       to see the model or the proof computed from the sat solver, you have to open the Output folder
+       in which are saved for each input file the correspondent output containing the model or the proof.
 
 The output of the execution will be saved into a .txt file inside the Output folder.
 

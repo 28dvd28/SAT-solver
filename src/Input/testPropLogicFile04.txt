@@ -1,0 +1,1 @@
+NOT (p AND q AND r AND NOT(p OR q OR r))

@@ -105,10 +105,10 @@ public class conflictSolvingMode {
                 if (!mainProcedure.problem.getClauses().contains(mainProcedure.conflictClause)) {
 
                     /** if there are too many clauses respecting the original ones of the problem i will forget the biggest one*/
-                    if ( mainProcedure.learning.size() > 2 * mainProcedure.problem.getClausesNumber() ){
+                    if ( mainProcedure.learning.size() > mainProcedure.problem.getClausesNumber()/3 ){
 
                         mainProcedure.learning.sort((list1, list2) -> Integer.compare(list2.size(), list1.size()));
-                        for(int i = 0; i<mainProcedure.learning.size()/2 + 1; i++) {
+                        for(int i = 0; i<mainProcedure.learning.size()/3 + 1; i++) {
                             List<Integer> clauseToForget = mainProcedure.learning.get(i);
                             mainProcedure.learning.remove(clauseToForget);
                             mainProcedure.problem.forgotClause(clauseToForget);
