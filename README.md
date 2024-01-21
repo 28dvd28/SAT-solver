@@ -18,25 +18,27 @@ translation from propositional logic to cnf form use the Tsenin Encoding rules, 
 an equisatisfiable cnf problem.
 
 Inside the input folder there are already some files. The pigeonhole problem from the case with 1 hole and
-2 pigeons till the case with 7 holes and 8 pigeons. Some files in propositional logic and some files from
+2 pigeons till the case with 7 holes and 8 pigeons. There are also some files in propositional logic and some files from
 https://www.cs.ubc.ca/~hoos/SATLIB/benchm.html website. In particular the files starting with *'uu'* are 
 unsatisfiable problems, the ones starting with *'u'* contains satisfiable problems.
 
 ### Writing file in proposition logic
-So if it is found a .txt file into the input folder then the solver will procede with te traduction into
+So if it is found a .txt file into the input folder then the solver will procede with the traduction into
 ECNF. This transduction is then saved into a .cnf file inside the input folder, so is important in the execution 
 with command *all* (see input prompt section) to delete previous generated .cnf files, otherwise the solver will
 be executed twice, on the file .txt and on the correspondent .cnf file.
 
 To write correctly a propositional formula into the .txt file is important to use the following syntax:
-  - Variables can start with an uppercase or lowercase letter, but not with numbers which can be used from the second symbol. The variable 2Person is not valid, the variable P3rson2 is valid.
+  - Variables can start with an uppercase or lowercase letter, but not with numbers which can be used from the second symbol. For example:
+    - variables like *2Person* are not valid, 
+    - variables like *P3rson2* are valid.
   - NOT: is the symbol for the negation
   - AND: is the symbol for the conjunction
   - OR: is the symbol for the disjunction
   - ->: is the symbol for the implication
   - <->: is the symbol that represent if and only if statement
 
-All the rules of the propositional logic must be followed, like the priority between symbols and their meaning. 
+From a semantic point of view, also the priority between symbols must be considered, like also their meaning. 
 To change priority inside the formula is possible to use *(* and *)* parenthesis. The formula can be written on more
 lines. Some examples can be found already in the *Input* folder and are named as *testPropLogicFile*.
 
@@ -70,8 +72,7 @@ will be also desplayed at the starting of the software, anyway a short descripti
 - **all**: for making the execution over the all file inside the input folder. At the end it will be show how many
        satisfiable and unsatisfiable problems have been found. Then to have a short output about the result for
        each file, when the solver will ask you, insert _y_ and then press enter, otherwise press _n_. If you want
-       to see the model or the proof computed from the sat solver, you have to open the Output folder
-       in which are saved for each input file the correspondent output containing the model or the proof.
+       to see the model or the proof computed from the sat solver see the next section.
 
 The output of the execution will be saved into a .txt file inside the Output folder.
 
