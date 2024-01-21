@@ -149,7 +149,7 @@ public class CNFProblem {
             copy.remove(c1);
 
             for (List<Integer> c2 : copy)
-                if (new HashSet<>(c2).containsAll(c1))
+                if (new HashSet<>(c2).containsAll(c1) && c2.size() > c1.size())
                     clauseToRemove.add(c2);
         }
 

@@ -1,4 +1,6 @@
+import javax.sound.midi.Soundbank;
 import java.beans.Introspector;
+import java.sql.SQLOutput;
 import java.util.*;
 
 class searchMode {
@@ -318,7 +320,7 @@ class searchMode {
         boolean problemValue = true;
         int clauseIncompleted = 0;
 
-        for ( List<Integer> clause : mainProcedure.problem.getClauses()) {
+        for ( List<Integer> clause : mainProcedure.originalProblem) {
 
             boolean clauseValue = false;
             int literalAssigned = 0;

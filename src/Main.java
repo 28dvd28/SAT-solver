@@ -1,3 +1,4 @@
+import javax.sound.midi.Soundbank;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -5,10 +6,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class Main {
+
     public static void main(String[] args) throws Exception {
 
         /**
@@ -39,18 +41,18 @@ public class Main {
                 helpGuide();
             else if (command_input.equals("all"))
                 allFilesCheck();
-            else if ( command_input.startsWith("file")  )
-                if ( command_input.equals(("file")) )
+            else if ( command_input.startsWith("file")  ) {
+                if (command_input.equals(("file")) || command_input.equals(("file ")))
                     System.out.println(">>>Expected a file name after the command");
-                else {
+                else if (command_input.startsWith("file ")) {
                     String fileName = command_input.split(" ")[1];
-                    Path filePath = Paths.get("src","Input", fileName);
+                    Path filePath = Paths.get("src", "Input", fileName);
                     if (Files.exists(filePath)) {
                         singleFileCheck(filePath);
-                    }
-                    else
+                    } else
                         System.out.println(">>>File not found" + filePath);
                 }
+            }
             else if ( command_input.equals("quit") )
                 continue;
             else if ( command_input.equals("clear"))
@@ -63,6 +65,7 @@ public class Main {
 
     }
 
+
     private static void helpGuide(){
 
         /**
@@ -70,12 +73,15 @@ public class Main {
          */
 
         System.out.println("Commands ");
-        System.out.println("    > all: to check the satisfiability of all the files in the input folder");
+        System.out.println("    > all: to check the satisfiability of all the files in the input folder.");
+        System.out.println("           At the end insert 'y' to see a short preview of the sat solver execution");
+        System.out.println("           or insert 'n' to go back to the main sat solver menu");
         System.out.println("    > file 'filename': to check the satisfiability of only the single file indicated");
         System.out.println("    > help: to show again this guide");
         System.out.println("    > clear: to clear the terminal");
         System.out.println("    > quit: to close the sat solver interface\n");
     }
+
 
     private static void clearTerminal() {
 
@@ -102,6 +108,7 @@ public class Main {
 
     }
 
+
     private static void singleFileCheck(Path filePath) throws Exception {
 
         /**
@@ -109,8 +116,11 @@ public class Main {
          */
 
         File file = filePath.toFile();
-        executeProcedure(file);
+        String isSat = executeProcedure(file);
+        System.out.println("The problem inside the file is: " + isSat);
+
     }
+
 
     private static void allFilesCheck() throws Exception {
 
@@ -118,20 +128,49 @@ public class Main {
          * execute the sat solver procedure over all the files inside the input folder
          */
 
+        Map<String, String> labeling = new LinkedHashMap<>();
+
         String directoryPath = "src/Input";
         File directory = new File(directoryPath);
+
         if (directory.exists() && directory.isDirectory()) {
             File[] files = directory.listFiles();
 
             if (files != null) {
                 for (File file : files) {
-                    executeProcedure(file);
+                    String isSat = executeProcedure(file);
+                    labeling.put(file.toString(), isSat);
                 }
             }
         }
+        int satCount = 0;
+        int unsatCount = 0;
+        for ( String val : labeling.values())
+            if (val.equals("SAT"))
+                satCount++;
+            else if ( val.equals("UNSAT"))
+                unsatCount++;
+
+        System.out.println("\nCompleted execution over " + labeling.size() + " files.\nResults: " + satCount + " SAT || " + unsatCount + " UNSAT");
+        System.out.println("Printing results? [y/n]");
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.print(">");
+            String command_input = scanner.nextLine();
+            if(command_input.equals("y")) {
+                for (Map.Entry<String, String> val : labeling.entrySet())
+                    System.out.println(val.getKey() + " -> " + val.getValue());
+                break;
+            }
+            else if (command_input.equals("n"))
+                break;
+            else
+                System.out.println("Command not valid, insert 'y' for printing results, insert 'n' to exit the execution");
+        }
+
     }
 
-    private static void executeProcedure(File file) throws Exception {
+    private static String executeProcedure(File file) throws Exception {
 
         /**
          * In this procedure first is checked if the file is in cnf form or not,
@@ -142,6 +181,8 @@ public class Main {
 
         if (file.toString().endsWith(".cnf")) {
 
+            String sat = "";
+
             System.out.println("\nExecuting SAT SOLVER over file " + file);
 
             long start = System.currentTimeMillis();
@@ -151,6 +192,11 @@ public class Main {
             procedureCDCL procedure = new procedureCDCL(problem);
 
             String result = procedure.executeCDCL();
+
+            if ( result.startsWith("UNSAT") )
+                sat = "UNSAT";
+            if ( result.startsWith("SAT") )
+                sat = "SAT";
 
             if (result.startsWith("SAT")) {
                 result = result.concat("\nModel:\n");
@@ -180,7 +226,8 @@ public class Main {
 
             long stop = System.currentTimeMillis();
 
-            System.out.println("Completed evaluation for: " + file + ". Execution time: " + (stop-start));
+            System.out.println("Completed evaluation for: " + file + " in time: " + (stop-start) + "ms");
+            return sat;
 
         }
         else if ( file.toString().endsWith(".txt")){
@@ -189,11 +236,12 @@ public class Main {
 
             propositionalLogicToNormalForm transformer = new propositionalLogicToNormalForm(file.toString());
             File cnfFormFile = new File(transformer.outputFile);
-            executeProcedure(cnfFormFile);
+            return executeProcedure(cnfFormFile);
 
         }
         else
             System.out.println(">>>File not valid, the file must be a .cnf file or a .txt file.");
+            return "Error";
     }
 
 }

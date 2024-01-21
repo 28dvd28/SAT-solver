@@ -1,0 +1,1 @@
+(((P AND Q) -> R) <-> ((NOT P AND NOT Q) -> R))
