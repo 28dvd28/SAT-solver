@@ -69,8 +69,8 @@ will be also desplayed at the starting of the software, anyway a short descripti
 - **file *'fileName.txt/cnf'***: will start the resolution over the only indicated file. Important is that this
   file must be inside the *Input* folder and that only the file name must be given in input, not the all path
   because the sat solver will automatically search inside the Input folder.
-- **all**: for making the execution over the all file inside the input folder. At the end it will be show how many
-       satisfiable and unsatisfiable problems have been found. Then to have a short output about the result for
+- **all**: for making the execution over the all file inside the input folder. For each file is shown some stats about 
+       the problem and the execution. At the end it will be show how many satisfiable and unsatisfiable problems have been found. Then to have a shorter output about the result for
        each file, when the solver will ask you, insert _y_ and then press enter, otherwise press _n_. If you want
        to see the model or the proof computed from the sat solver see the next section.
 
