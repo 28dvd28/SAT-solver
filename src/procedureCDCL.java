@@ -26,6 +26,10 @@ public class procedureCDCL {
     proofConstructor proofConstructor;
     Integer assertionLiteral;
 
+    int conflict_number = 0;
+    int decisions_made = 0;
+
+
     public procedureCDCL(CNFProblem problem){
 
         this.problem = problem;
@@ -97,6 +101,7 @@ public class procedureCDCL {
 
         if (searchMode.unitPropagation(this).equals("CONFLICT")){
             conflictSolvingMode.conflictAnalysis(this);
+            this.conflict_number += 1;
             return "UNSAT";
         }
 
@@ -106,11 +111,14 @@ public class procedureCDCL {
 
             if (!afterBacktrackCycle) {
                 searchMode.pickBranchingVariable(this);
+                this.decisions_made += 1;
             }else{
                 afterBacktrackCycle = false;
             }
 
             if (searchMode.unitPropagation(this).equals("CONFLICT")){
+
+                this.conflict_number += 1;
 
                 searchMode.conflictCountingVSIDS(this);
 
