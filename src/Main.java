@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLOutput;
 import java.util.*;
 
 
@@ -116,8 +117,7 @@ public class Main {
          */
 
         File file = filePath.toFile();
-        String isSat = executeProcedure(file);
-        System.out.println("The problem inside the file is: " + isSat);
+        executeProcedure(file);
 
     }
 
@@ -226,7 +226,21 @@ public class Main {
 
             long stop = System.currentTimeMillis();
 
-            System.out.println("Completed evaluation for: " + file + " in time: " + (stop-start) + "ms");
+
+            System.out.println("===========================[ EVALUATION COMPLETED: PROBLEM STATS ]===========================");
+            System.out.println("    Variables: " + procedure.problem.getVariableNumber());
+            System.out.println("    Clauses:   " + procedure.problem.getClausesNumber());
+            System.out.println("======================================[ SEARCH STATS ]=======================================");
+            System.out.println("    Decisions: " + procedure.decisions_made);
+            System.out.println("    Conflicts: " +procedure.conflict_number);
+            System.out.println("    Time:      " + (stop-start) + "ms");
+            System.out.println("    Result:    " + sat);
+            if ( sat.equals("UNSAT") )
+                if (procedure.proofConstructor.size()<500)
+                    System.out.println("    Proof size: " + procedure.proofConstructor.size());
+                else
+                    System.out.println("    Proof size: over 500");
+            System.out.println("=============================================================================================\n");
             return sat;
 
         }
